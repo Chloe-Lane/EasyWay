@@ -28,7 +28,7 @@ function RoomScreen() {
                     <h3>{room.name}</h3>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                    <Rating value={room.rating} text={`${room.numReviews} reviews`} />
+                    <Rating value={room.rating} text={`${room.numReviews} reviews`} color={'#f8e825'}/>
                 </ListGroup.Item>
                 <ListGroup.Item>
                     Price: <strong>${room.price}</strong>

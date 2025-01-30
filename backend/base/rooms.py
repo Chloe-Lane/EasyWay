@@ -8,6 +8,7 @@ rooms = [
         'location': 'Japan',
         'description': 'Experience the beauty of Japan, with a warm and inviting atmosphere. Our spacious rooms are perfect for relaxation and relaxation. Book your stay today!',
         'rating': 5,
+        'numReviews': 8,
     },
     {
         '_id': '2',
@@ -17,6 +18,7 @@ rooms = [
         'location': 'Bahamas',
         'description': 'Relax in a stylish, cozy retreat featuring modern amenities, breathtaking views, and a prime location near Miami Your perfect getaway awaits!',
         'rating': 4,
+        'numReviews': 8,
     },
     {
         '_id': '3',
@@ -26,6 +28,7 @@ rooms = [
         'location': 'Angeles',
         'description': 'Experience the beauty of Angeles, with a warm and inviting atmosphere. Our spacious rooms are perfect for relaxation and relaxation. Book your stay today!',
         'rating': 3.5,
+        'numReviews': 8,
     },
     {
         '_id': '4',
@@ -35,6 +38,7 @@ rooms = [
         'location': 'Tondo',
         'description': 'Unwind in our serene Airbnb, offering plush bedding, free Wi-Fi, and a peaceful atmosphere just minutes from Manila.',
         'rating': 3,
+        'numReviews': 8,
     },
     {
         '_id': '5',
@@ -44,6 +48,7 @@ rooms = [
         'location': 'Boracay',
         'description': 'Experience comfort and convenience in our beautifully designed space, complete with a fully equipped kitchen and easy access to parks and vibrant nightlife. Book your stay today!',
         'rating': 2,
+        'numReviews': 8,
     },
     {
         '_id': '6',
@@ -53,5 +58,6 @@ rooms = [
         'location': 'Palawan',
         'description': 'Enjoy sleek design, cozy spaces, and all the comforts of home. Perfectly located for exploring Palawan, dining, and entertainment.',
         'rating': 5,
+        'numReviews': 8,
     }
 ]

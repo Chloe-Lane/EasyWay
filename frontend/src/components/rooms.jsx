@@ -37,7 +37,7 @@ function Rooms({ rooms }) {
 
           <Card.Text as="div">
             <div className="my-3">
-              <Rating value={rooms.rating} text={'#f8e825'} />
+              <Rating value={rooms.rating} text={`${rooms.numReviews} reviews `} color={'#f8e825'} />
             </div>
           </Card.Text>
           
