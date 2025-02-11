@@ -1,4 +1,4 @@
-# EasyStay
+# EasyWay
 
 ## Description
 EasyStay is a real estate platform, allowing users to list, book, and manage short-term rental properties. The platform provides an easy-to-use interface for both hosts and guests to interact seamlessly.
