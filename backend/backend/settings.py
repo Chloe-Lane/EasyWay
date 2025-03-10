@@ -122,10 +122,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 import os 
+import random
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [BASE_DIR / "static_my_project", ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 STATIC_ROOT = os.path.join(BASE_DIR, "static cdn", "static root")
 
 MEDIA_URL = 'media/'

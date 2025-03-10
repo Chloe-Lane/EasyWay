@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import Rating from './rating';
+import Rating from '../components/rating';  // Updated path
 import { Link } from 'react-router-dom';
 
 function Rooms({ rooms }) {

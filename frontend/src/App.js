@@ -4,6 +4,7 @@ import HomeScreen from "./screens/HomeScreen.jsx";
 import RoomScreen from "./screens/RoomScreen.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Container } from "react-bootstrap";
+import './bootstrap.min.css';
 
 function App() {
   return (

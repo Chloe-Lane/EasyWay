@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set "VIRTUAL_ENV=C:\Users\AI LAB 15\Documents\easyway\EasyWay\backend\.venv"
+set "VIRTUAL_ENV=C:\Users\ACER\Documents\easystay\backend\.venv"
 
 if not defined PROMPT set PROMPT=$P$G
 
