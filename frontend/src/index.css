@@ -78,3 +78,105 @@ body, html {
 .room-details {
   padding: 15px;
 }
+
+.navbar {
+  margin-bottom: 80px; /* Adjust as needed */
+}
+
+body {
+  padding-top: 80px; /* Adjust to match the navbar height */
+}
+
+/* Room Screen Styles */
+.room-title {
+  font-size: 26px;
+  color: black;
+}
+
+.room-image {
+  max-width: 700px;
+  border-radius: 10px;
+}
+
+.room-details {
+  font-size: 18px;
+}
+
+/* Calendar Container */
+.calendar-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.calendar-wrapper {
+  margin-right: 20px;
+}
+
+/* Calendar Styles */
+.large-calendar {
+  width: 300px !important;
+  font-size: 16px !important;
+}
+
+.large-calendar .react-calendar {
+  width: 280px !important;
+  font-size: 14px !important;
+}
+
+.large-calendar .react-calendar__tile {
+  padding: 8px !important;
+  font-size: 14px !important;
+}
+
+.large-calendar .react-calendar__navigation button {
+  font-size: 14px !important;
+  padding: 6px !important;
+}
+
+/* Selected Dates */
+.selected-start-date {
+  background: rgb(124, 189, 151) !important;
+  color: white !important;
+  font-weight: bold !important;
+  border-radius: 20px !important;
+}
+
+.selected-range {
+  background: rgb(205, 235, 208) !important;
+  color: black !important;
+  border-radius: 20px !important;
+}
+
+/* Active Date */
+.react-calendar__tile--active {
+  background: rgb(96, 197, 138) !important;
+  color: black !important;
+  font-weight: bold !important;
+  border-radius: 20px !important;
+}
+
+/* Hover Effect */
+.react-calendar__tile:enabled:hover {
+  background: rgb(205, 235, 208) !important;
+  color: black !important;
+  border-radius: 20px !important;
+}
+
+/* Today's Date */
+.react-calendar__tile--now {
+  background-color: #d3d3d3 !important;
+  color: black !important;
+  border-radius: 20px !important;
+}
+
+/* Button Styles */
+.button-group {
+  margin-top: 10px;
+}
+
+.small-button {
+  font-size: 13px !important;
+  border-radius: 5px !important;
+  padding: 5px 4px !important;
+}

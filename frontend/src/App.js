@@ -5,6 +5,7 @@ import RoomScreen from "./screens/RoomScreen.jsx";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Container } from "react-bootstrap";
 import './bootstrap.min.css';
+import LoginScreen from "./screens/LoginScreen.jsx";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomeScreen />} exact />
             <Route path="/rooms/:id" element={<RoomScreen />} />
+            <Route path='/login' element={<LoginScreen />} />
           </Routes>  
         </Container>
       </div>
