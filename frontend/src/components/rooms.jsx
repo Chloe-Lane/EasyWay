@@ -1,62 +1,137 @@
-import React from 'react';
-import { Card } from 'react-bootstrap';
-import Rating from '../components/rating';  // Updated path
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Image, ListGroup, Button } from 'react-bootstrap';
+import Rating from '../components/rating';
+import { Link, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { listRoomDetails } from '../actions/roomActions';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
-function Rooms({ rooms }) {
-  return (
-    <div className="d-flex justify-content-center my-3">
-      <Card
-        className="mx-3 my-3 p-4 rounded shadow"
-        style={{
-          width: '25rem',
-          height: '45rem',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden', // Prevent content from overflowing
-        }}
-      >
-        <Link to={`/rooms/${rooms._id}`}>
-          <Card.Img
-            src={rooms.image}
-            style={{
-              height: '15rem',
-              objectFit: 'cover', // Ensure image fits within its container
-            }}
-          />
-        </Link>
+function RoomScreen() {
+    const { id } = useParams();
+    const dispatch = useDispatch();
+    
+    const roomDetails = useSelector(state => state.roomDetails);
+    const { room = {}, loading, error } = roomDetails; 
 
-        <Card.Body className="d-flex flex-column">
-          <Link to={`/rooms/${rooms._id}`} className="text-decoration-none">
-            <Card.Title className="mb-2">
-              <strong className="text-dark">{rooms.name}</strong>
-            </Card.Title>
-          </Link>
+    const [date, setDate] = useState(new Date());
+    const [savedDate, setSavedDate] = useState(null);
 
-          <Card.Text className="text-dark" style={{ flexGrow: 1, overflowY: 'auto' }}>
+    useEffect(() => {
+        console.log("🔍 Fetching room details for ID:", id);
+        dispatch(listRoomDetails(id));
+    }, [dispatch, id]);
 
-          <Card.Text as="div">
-            <div className="my-3">
-              <Rating value={rooms.rating} text={`${rooms.numReviews} reviews `} color={'#f8e825'} />
-            </div>
-          </Card.Text>
-          
-            <p>
-              Price: <strong>₱{rooms.price}</strong>
-            </p>
-            <p>
-              <i className="fas fa-location-arrow"></i> Location:{' '}
-              <strong>{rooms.location}</strong>
-            </p>
-            <p>
-              Description: <strong>{rooms.description}</strong>
-            </p>
-          </Card.Text>
+    const handleSaveDate = () => {
+        setSavedDate(date);
+    };
 
-        </Card.Body>
-      </Card>
-    </div>
-  );
+    const handleClearDate = () => {
+        setSavedDate(null);
+        setDate(new Date());
+    };
+
+    return (
+        <>
+            <Link to="/" className="btn btn-light my-3">Return</Link>
+
+            {loading ? (
+                <Loader />
+            ) : error ? (
+                <Message variant="danger">{error}</Message>
+            ) : (
+                <>
+                    {/* ROOM NAME */}
+                    <Row className="justify-content-center">
+                        <Col md={8} className="text-center">
+                            <h2 className="text-primary" style={{ fontSize: '26px' }}>
+                                {room.name || 'No Name Available'}
+                            </h2>
+                        </Col>
+                    </Row>
+
+                    {/* IMAGE */}
+                    <Row className="justify-content-center mt-2">
+                        <Col md={8} className="text-center">
+                            {room.image ? (
+                                <Image 
+                                    src={room.image} 
+                                    alt={room.name} 
+                                    fluid 
+                                    style={{ maxWidth: '700px', borderRadius: '10px' }} 
+                                />
+                            ) : (
+                                <Message variant="warning">No image available</Message>
+                            )}
+                        </Col>
+                    </Row>
+
+                    {/* ROOM DETAILS */}
+                    <Row className="justify-content-center mt-4">
+                        <Col md={8}>
+                            <ListGroup variant="flush" style={{ fontSize: '18px' }}>
+                                <ListGroup.Item>
+                                    <strong>Reviews:</strong> 
+                                    <Rating value={room.rating || 0} text={`${room.numReviews || 0} reviews`} color={'#f8e825'} />
+                                </ListGroup.Item>
+                                <ListGroup.Item>
+                                    <strong>Price:</strong> <span>${room.price || 'N/A'}</span>
+                                </ListGroup.Item>
+                                <ListGroup.Item>
+                                    <strong>Description:</strong> <span>{room.description || 'No description available'}</span>
+                                </ListGroup.Item>
+                            </ListGroup>
+                        </Col>
+                    </Row>
+
+                    {/* CALENDAR & BOOKING DATE */}
+                    <Row className="justify-content-center mt-4">
+                        <Col md={6} className="text-center">
+                            <h4 style={{ fontSize: '20px', marginBottom: '10px' }}>
+                                SELECT BOOKING DATE:
+                            </h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Calendar 
+                                    onChange={setDate} 
+                                    value={date} 
+                                    tileContent={({ date }) =>
+                                        savedDate && date.toDateString() === savedDate.toDateString() ? (
+                                            <span style={{ fontWeight: 'bold' }}>{date.getDate()}</span>
+                                        ) : null
+                                    }
+                                    tileClassName={({ date }) =>
+                                        savedDate && date.toDateString() === savedDate.toDateString() ? 'saved-date' : ''
+                                    }
+                                    tileDisabled={() => false}
+                                    navigationLabel={({ date }) => `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`}
+                                    prevLabel="«"
+                                    nextLabel="»"
+                                />
+                                <p style={{ fontSize: '18px', marginTop: '10px' }}>
+                                    Selected Date: <strong>{date.toDateString()}</strong>
+                                </p>
+
+                                {/* SAVE & CLEAR BUTTONS */}
+                                <div className="mt-3">
+                                    <Button variant="success" onClick={handleSaveDate} className="mx-2">Save Date</Button>
+                                    <Button variant="danger" onClick={handleClearDate} className="mx-2">Clear Date</Button>
+                                </div>
+
+                                {/* DISPLAY SAVED DATE */}
+                                {savedDate && (
+                                    <p style={{ fontSize: '18px', marginTop: '10px', color: 'green' }}>
+                                        <strong>Saved Date:</strong> {savedDate.toDateString()}
+                                    </p>
+                                )}
+                            </div>
+                        </Col>
+                    </Row>
+                </>
+            )}
+        </>
+    );
 }
 
-export default Rooms;
+export default RoomScreen;

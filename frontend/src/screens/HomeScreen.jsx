@@ -42,41 +42,48 @@ function HomeScreen() {
       </div>
 
       {/* Latest Rooms Section */}
-      <Container fluid className="px-4">
-        <h1>Latest Rooms</h1>  {/* ✅ Moved inside return */}
-        
+      <Container fluid className="w-100 m-0 p-0">  
+        <h3 className="px-3">Latest Rooms</h3>  
+
         {loading ? (
           <Loader />  
         ) : error ? (
           <Message variant='danger'>{error}</Message>
         ) : (
-          <Row className="g-4">
-            {rooms.map((room) => (
-              <Col key={room._id} xs={12} sm={6} md={4} lg={3} xl={2}>
-                <Card className="border-0 shadow-sm rounded-4 h-100">
-                  <Link to={`/rooms/${room._id}`}>
-                    <Card.Img 
-                      variant="top" 
-                      src={room.image} 
-                      className="rounded-4"
-                      style={{ width: '100%', height: '250px', objectFit: 'cover' }} 
-                    />
-                  </Link>
-                  <Card.Body className="text-start">
-                    <Card.Title className="text-truncate fs-6">{room.name}</Card.Title>
-                    <p className="text-muted mb-1" style={{ fontSize: '14px' }}>
-                      {room.location} • {room.distance} km away
-                    </p>
-                    <Rating value={room.rating} text={`${room.numReviews} reviews`} color={'#f8e825'} />
-                    <Card.Text className="fs-6">
-                      <strong>₱{room.price ? room.price : 'N/A'}</strong> / night
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        )}
+
+          
+<Row className="g-3 justify-content-center">
+  {rooms.map((room, index) => (
+    <Col key={room._id} lg={2} md={4} sm={6} className="d-flex">
+      <Card className="border-0 shadow-sm rounded-4 w-100">
+        <Link to={`/rooms/${room._id}`}>
+          <Card.Img 
+            variant="top" 
+            src={room.image} 
+            className="rounded-4 w-100"
+            style={{ height: '300px', objectFit: 'cover' }}
+          />
+        </Link>
+        <Card.Body className="text-start">
+          <Card.Title className="text-truncate fs-6">{room.name}</Card.Title>
+          <p className="text-muted mb-1" style={{ fontSize: '14px' }}>
+            {room.location} • {room.distance} km away
+          </p>
+          <Rating 
+            value={room.rating} 
+            text={<span className="d-block" style={{ fontSize: '16px', marginTop: '2px', marginBottom: '-10px'}}>{room.numReviews} reviews</span>} 
+            color={'#f8e825'} 
+          />
+          <Card.Text className="fs-6">
+            <strong>₱{room.price ? room.price : 'N/A'}</strong> / night
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    </Col>
+  ))}
+</Row>
+
+)}
       </Container>
     </>
   );
