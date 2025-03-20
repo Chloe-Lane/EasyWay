@@ -1,10 +1,9 @@
 import React from 'react';
-import { Container, Nav, Navbar, NavDropdown, Form, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../actions/userActions';
-import '../index.css'
-import { useNavigate } from 'react-router-dom';
+import RoomSearchBar from "./RoomSearchBar"; // ✅ Import RoomSearchBar
 
 function Header() {
   const dispatch = useDispatch();
@@ -16,6 +15,7 @@ function Header() {
     dispatch(logout());
     navigate('/login'); // Instantly redirect to LoginScreen
   };
+
   return (
     <Navbar expand="lg" className="bg-white shadow-sm fixed-top w-100">
       <Container fluid className="px-4">
@@ -29,11 +29,10 @@ function Header() {
             <Nav.Link as={Link} to="/"><i className="fa-solid fa-house"></i> Home</Nav.Link>
           </Nav>
 
-          {/* Search Bar */}
-        <Form className="d-flex mx-auto justify-content-center w-50">
-          <Form.Control type="search" placeholder="Search destinations" className="me-2" />
-          <Button variant="outline-primary"><i className="fas fa-search"></i></Button>
-        </Form>
+          {/* ✅ Replaced Static Search Bar with RoomSearchBar */}
+          <div className="mx-auto w-50">
+            <RoomSearchBar />
+          </div>
 
           {/* User Info / Login */}
           {userInfo ? (

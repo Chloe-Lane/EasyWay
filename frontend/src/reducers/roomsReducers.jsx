@@ -4,7 +4,9 @@ import {
     ROOM_LIST_FAIL,
     ROOM_DETAILS_REQUEST,
     ROOM_DETAILS_SUCCESS,
-    ROOM_DETAILS_FAIL
+    ROOM_DETAILS_FAIL,
+    SEARCH_ROOMS_SUCCESS,
+    SEARCH_ROOMS_FAIL,
 } from '../constants/roomConstants';
 
 export const roomsListReducer = (state = { rooms: [], loading: false }, action) => {
@@ -32,3 +34,14 @@ export const roomDetailsReducer = (state = { room: {}, loading: false }, action)
             return state;
     }
 }
+
+export const searchRoomsReducer = (state = { rooms: [] }, action) => {
+    switch (action.type) {
+        case SEARCH_ROOMS_SUCCESS:
+            return { rooms: action.payload };
+        case SEARCH_ROOMS_FAIL:
+            return { rooms: [] };
+        default:
+            return state;
+    }
+};

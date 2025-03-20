@@ -10,4 +10,5 @@ urlpatterns = [
     path('users/profile/', views.getUserProfile, name="user-profile"),
     path('users/', views.getUsers, name='users'),
     path('users/register', views.registerUser, name="register-user"),
+    path('rooms/search/', views.search_rooms, name='search-rooms'),
 ]

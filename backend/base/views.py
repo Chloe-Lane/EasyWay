@@ -70,3 +70,25 @@ def registerUser(request):
     except:
         message = {'detail': 'User with this email already exists'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    
+@api_view(['GET'])
+def search_rooms(request):
+    query = request.GET.get('q', '')  # Get the search query from URL params
+    if query:
+        rooms = Room.objects.filter(location__icontains=query)  # Case-insensitive search
+        results = [
+            {
+                "id": room._id,
+                "name": room.name,
+                "image": room.image.url if room.image else None,
+                "price": room.price,
+                "location": room.location,
+                "rating": room.rating,
+                "numReviews": room.numReviews,
+            }
+            for room in rooms
+        ]
+        return Response(results)  # Returns a JSON response with matching rooms
+    return Response([])  # Returns an empty array if no query is provided

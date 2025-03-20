@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Container } from "react-bootstrap";
 import './bootstrap.min.css';
 import LoginScreen from "./screens/LoginScreen.jsx";
+import SearchResults from "./screens/SearchResult.jsx";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<HomeScreen />} exact />
             <Route path="/rooms/:id" element={<RoomScreen />} />
             <Route path='/login' element={<LoginScreen />} />
+            <Route path="/search-results" element={<SearchResults />} />
           </Routes>  
         </Container>
       </div>

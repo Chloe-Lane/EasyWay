@@ -1,5 +1,6 @@
 import { ROOM_LIST_REQUEST, ROOM_LIST_SUCCESS, ROOM_LIST_FAIL,
-    ROOM_DETAILS_REQUEST, ROOM_DETAILS_SUCCESS, ROOM_DETAILS_FAIL
+    ROOM_DETAILS_REQUEST, ROOM_DETAILS_SUCCESS, ROOM_DETAILS_FAIL,
+    SEARCH_ROOMS_SUCCESS, SEARCH_ROOMS_FAIL
 } from '../constants/roomConstants'
 import axios from 'axios'
 
@@ -38,6 +39,21 @@ export const listRoomDetails = (id) => async (dispatch) => {
         dispatch({
             type: ROOM_DETAILS_FAIL,
             payload: error.response?.data.message || error.message
+        });
+    }
+};
+
+export const searchRooms = (query) => async (dispatch) => {
+    try {
+        const { data } = await axios.get(`/rooms/search/?q=${query}`);
+
+        dispatch({
+            type: SEARCH_ROOMS_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: SEARCH_ROOMS_FAIL,
         });
     }
 };
