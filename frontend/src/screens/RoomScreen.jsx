@@ -9,6 +9,9 @@ import Message from '../components/Message';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../index.css'; // Import the CSS file
+import Map from "../components/Map"; // Import the Map component
+import { setMapLocation } from '../actions/mapActions';
+
 
 function RoomScreen() {
     const { id } = useParams();
@@ -24,7 +27,16 @@ function RoomScreen() {
     useEffect(() => {
         dispatch(listRoomDetails(id));
     }, [dispatch, id]);
-
+    
+    useEffect(() => {
+        console.log("Room details fetched:", room); // 🔍 Debugging
+        if (room && room.latitude && room.longitude) {
+            console.log("Dispatching setMapLocation:", room.latitude, room.longitude); // 🔍 Debugging
+            dispatch(setMapLocation(room.latitude, room.longitude));
+        }
+    }, [dispatch, room]);
+    
+    
     const handleDateClick = (clickedDate) => {
         if (!startDate || (startDate && endDate)) {
             setStartDate(clickedDate);
@@ -80,6 +92,7 @@ function RoomScreen() {
                                     alt={room.name}
                                     fluid
                                     className="room-image"
+                                    style={{ width: '600px', height: '500px', objectFit: 'cover' }}
                                 />
                             ) : (
                                 <Message variant="warning">No image available</Message>
@@ -103,6 +116,13 @@ function RoomScreen() {
                             </ListGroup>
                         </Col>
                     </Row>
+
+                    <Row className="justify-content-center mt-4">
+                        <Col md={8}>
+                            <Map latitude={room.latitude || 51.505} longitude={room.longitude || -0.09} />
+                        </Col>
+                    </Row>
+
 
                     <Row className="justify-content-center mt-4">
                         <Col md={8} className="calendar-container">

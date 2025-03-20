@@ -1,0 +1,2 @@
+export const MAP_SET_LOCATION = 'MAP_SET_LOCATION';
+export const MAP_SET_ERROR = 'MAP_SET_ERROR';

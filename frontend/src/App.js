@@ -7,6 +7,7 @@ import { Container } from "react-bootstrap";
 import './bootstrap.min.css';
 import LoginScreen from "./screens/LoginScreen.jsx";
 import SearchResults from "./screens/SearchResult.jsx";
+import Map from "./components/Map";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/rooms/:id" element={<RoomScreen />} />
             <Route path='/login' element={<LoginScreen />} />
             <Route path="/search-results" element={<SearchResults />} />
+            <Route path="/map" element={<Map />} /> {/* New Map Route */}
           </Routes>  
         </Container>
       </div>

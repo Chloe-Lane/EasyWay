@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
+from .serializers import RoomSerializer
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -73,11 +74,16 @@ def registerUser(request):
     
 
     
+from django.db.models import Q
+
 @api_view(['GET'])
 def search_rooms(request):
-    query = request.GET.get('q', '')  # Get the search query from URL params
+    query = request.GET.get('q', '').strip()  # Get and clean the search query
+    
     if query:
-        rooms = Room.objects.filter(location__icontains=query)  # Case-insensitive search
+        # Search for rooms where 'name' or 'location' contains the query (case-insensitive)
+        rooms = Room.objects.filter(Q(name__icontains=query) | Q(location__icontains=query))
+
         results = [
             {
                 "id": room._id,
@@ -90,5 +96,6 @@ def search_rooms(request):
             }
             for room in rooms
         ]
-        return Response(results)  # Returns a JSON response with matching rooms
-    return Response([])  # Returns an empty array if no query is provided
+        return Response(results)
+    
+    return Response([])  # Return an empty list if no query is provided

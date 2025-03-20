@@ -26,6 +26,8 @@ class Room(models.Model):
     description = models.TextField(null=True, blank=True)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     numReviews = models.IntegerField(null=True, blank=True, default=0)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return self.name
