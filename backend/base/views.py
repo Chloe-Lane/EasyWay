@@ -10,21 +10,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 from .serializers import RoomSerializer
-
-@api_view(['GET'])
-def getRoutes(request):
-
-    routes = [
-        '/api/products/',
-        '/api/products/create/',
-        '/api/products/upload/',
-        '/api/products/<id>/reviews/',
-        '/api/products/top/',
-        '/api/products/<id>/',
-        '/api/products/delete/<id>/',
-        '/api/products/update/<id>/',
-    ]
-    return Response(routes)
+from django.shortcuts import get_object_or_404
 
 @api_view(['GET'])
 def getRooms(request):
@@ -35,7 +21,7 @@ def getRooms(request):
 
 @api_view(['GET'])
 def getRoom(request, pk):
-    room = Room.objects.get(_id=pk)
+    room = get_object_or_404(Room, _id=pk)
     serializer = RoomSerializer(room, many=False)
     return Response(serializer.data)
 
@@ -78,24 +64,19 @@ from django.db.models import Q
 
 @api_view(['GET'])
 def search_rooms(request):
-    query = request.GET.get('q', '').strip()  # Get and clean the search query
-    
-    if query:
-        # Search for rooms where 'name' or 'location' contains the query (case-insensitive)
-        rooms = Room.objects.filter(Q(name__icontains=query) | Q(location__icontains=query))
+    query = request.GET.get('q', '').strip()
+    amenities = request.GET.getlist('amenities[]')
 
-        results = [
-            {
-                "id": room._id,
-                "name": room.name,
-                "image": room.image.url if room.image else None,
-                "price": room.price,
-                "location": room.location,
-                "rating": room.rating,
-                "numReviews": room.numReviews,
-            }
-            for room in rooms
-        ]
-        return Response(results)
-    
-    return Response([])  # Return an empty list if no query is provided
+    rooms = Room.objects.all()
+
+    if query:
+        rooms = rooms.filter(Q(name__icontains=query) | Q(location__icontains=query))
+
+    if amenities:
+        amenity_filters = Q()
+        for amenity in amenities:
+            amenity_filters |= Q(amenities__name__icontains=amenity)  # OR condition
+        rooms = rooms.filter(amenity_filters)
+
+    serializer = RoomSerializer(rooms.distinct(), many=True)  # Use `.distinct()` to avoid duplicates
+    return Response(serializer.data)

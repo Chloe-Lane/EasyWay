@@ -1,6 +1,7 @@
 import { ROOM_LIST_REQUEST, ROOM_LIST_SUCCESS, ROOM_LIST_FAIL,
     ROOM_DETAILS_REQUEST, ROOM_DETAILS_SUCCESS, ROOM_DETAILS_FAIL,
-    SEARCH_ROOMS_SUCCESS, SEARCH_ROOMS_FAIL
+    ROOM_SEARCH_SUCCESS, ROOM_SEARCH_FAIL,
+    ROOM_SEARCH_REQUEST
 } from '../constants/roomConstants'
 import axios from 'axios'
 
@@ -43,17 +44,21 @@ export const listRoomDetails = (id) => async (dispatch) => {
     }
 };
 
-export const searchRooms = (query) => async (dispatch) => {
+export const searchRooms = (query, selectedAmenities = []) => async (dispatch) => {
     try {
-        const { data } = await axios.get(`/rooms/search/?q=${query}`);
+        dispatch({ type: ROOM_SEARCH_REQUEST });
 
-        dispatch({
-            type: SEARCH_ROOMS_SUCCESS,
-            payload: data,
-        });
+        const params = new URLSearchParams();
+        if (query) params.append("q", query);
+        selectedAmenities.forEach((amenity) => params.append("amenities[]", amenity));
+
+        const { data } = await axios.get(`/rooms/search/?${params.toString()}`);
+
+        dispatch({ type: ROOM_SEARCH_SUCCESS, payload: data });
     } catch (error) {
         dispatch({
-            type: SEARCH_ROOMS_FAIL,
+            type: ROOM_SEARCH_FAIL,
+            payload: error.response && error.response.data.detail ? error.response.data.detail : error.message,
         });
     }
 };

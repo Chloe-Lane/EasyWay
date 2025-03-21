@@ -12,7 +12,6 @@ import '../index.css'; // Import the CSS file
 import Map from "../components/Map"; // Import the Map component
 import { setMapLocation } from '../actions/mapActions';
 
-
 function RoomScreen() {
     const { id } = useParams();
     const dispatch = useDispatch();
@@ -29,13 +28,10 @@ function RoomScreen() {
     }, [dispatch, id]);
     
     useEffect(() => {
-        console.log("Room details fetched:", room); // 🔍 Debugging
         if (room && room.latitude && room.longitude) {
-            console.log("Dispatching setMapLocation:", room.latitude, room.longitude); // 🔍 Debugging
             dispatch(setMapLocation(room.latitude, room.longitude));
         }
     }, [dispatch, room]);
-    
     
     const handleDateClick = (clickedDate) => {
         if (!startDate || (startDate && endDate)) {
@@ -113,6 +109,40 @@ function RoomScreen() {
                                 <ListGroup.Item>
                                     <strong>Description:</strong> <span>{room.description || 'No description available'}</span>
                                 </ListGroup.Item>
+
+                                <Row>
+                                    <Col md={6}>
+                                        <ListGroup.Item>
+                                            <strong>Amenities:</strong>
+                                            {room.amenities && room.amenities.length > 0 ? (
+                                                <ul>
+                                                    {room.amenities.map((amenity, index) => (
+                                                        <li key={index}>{amenity.name}</li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <span> No amenities available</span>
+                                            )}
+                                        </ListGroup.Item>
+                                    </Col>
+
+                                    {/* New Host Rules and Policies Section */}
+                                    <Col md={6}>
+                                        <ListGroup.Item>
+                                            <strong>Host Rules & Policies:</strong>
+                                            {room.policies ? (
+                                                <ul>
+                                                    {room.policies.map((policy, index) => (
+                                                        <li key={index}>{policy.name}</li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <span>No specific rules available.</span>
+                                            )}
+                                        </ListGroup.Item>
+                                    </Col>
+                                </Row>
+
                             </ListGroup>
                         </Col>
                     </Row>
@@ -122,7 +152,6 @@ function RoomScreen() {
                             <Map latitude={room.latitude || 51.505} longitude={room.longitude || -0.09} />
                         </Col>
                     </Row>
-
 
                     <Row className="justify-content-center mt-4">
                         <Col md={8} className="calendar-container">

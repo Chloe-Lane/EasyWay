@@ -17,12 +17,26 @@ def upload_image_path(instance, filename):
 
 User = get_user_model()
 
+class Amenity(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class Policy(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
 class Room(models.Model):
     _id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200, null=True, blank=True)
+    amenities = models.ManyToManyField(Amenity, related_name='rooms', blank=True)
     image = models.ImageField(upload_to=upload_image_path,null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     location = models.CharField(max_length=200, null=True, blank=True)
+    policies = models.ManyToManyField(Policy, related_name='rooms', blank=True)
     description = models.TextField(null=True, blank=True)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     numReviews = models.IntegerField(null=True, blank=True, default=0)

@@ -52,15 +52,15 @@ function HomeScreen() {
                   <Card.Body className="text-start">
                     <Card.Title className="text-truncate fs-6">{room.name}</Card.Title>
                     <p className="text-muted mb-1" style={{ fontSize: '14px' }}>
-                      {room.location} • {room.distance} km away
+                      <b>{room.location} • {room.distance}  </b> km away
                     </p>
                     <Rating
                       value={room.rating}
-                      text={<span className="d-block" style={{ fontSize: '16px', marginTop: '2px', marginBottom: '-10px'}}>{room.numReviews} reviews</span>}
+                      text={<span className="d-block" style={{ fontSize: '13px', marginTop: '2px', marginBottom: '10px'}}>{room.numReviews} reviews</span>}
                       color={'#f8e825'}
                     />
                     <Card.Text className="fs-6">
-                      <strong>₱{room.price ? room.price : 'N/A'}</strong> / night
+                      <strong><b>₱{room.price ? room.price : 'N/A'}</b></strong> / night
                     </Card.Text>
                   </Card.Body>
                 </Card>

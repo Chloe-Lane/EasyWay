@@ -1,13 +1,26 @@
 from rest_framework import serializers
-from .models import Room
+from .models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
+class AmenitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Amenity
+        fields = ['name']
+
+class PolicySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Policy
+        fields = ['name']
+
 class RoomSerializer(serializers.ModelSerializer):
+    amenities = AmenitySerializer(many=True, read_only=True)
+    policies = PolicySerializer(many=True, read_only=True)
+
     class Meta:
         model = Room
-        fields = '__all__'
+        fields = '__all__'  # Includes amenities
         
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
