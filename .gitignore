@@ -9,7 +9,6 @@ venv/
 # Django specific ignores
 /media/
 /staticfiles/
-/db.sqlite3
 
 # Node.js/React related files
 node_modules/
