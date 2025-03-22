@@ -7,8 +7,8 @@ import { listRoomDetails } from '../actions/roomActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import 'react-calendar/dist/Calendar.css';
-import '../index.css'; // Import the CSS file
-import Map from "../components/Map"; // Import the Map component
+import '../index.css';
+import Map from "../components/Map";
 import { setMapLocation } from '../actions/mapActions';
 
 function RoomScreen() {
@@ -17,6 +17,9 @@ function RoomScreen() {
 
     const roomDetails = useSelector(state => state.roomDetails);
     const { room = {}, loading, error } = roomDetails;
+
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin; // Get user information
 
     useEffect(() => {
         dispatch(listRoomDetails(id));
@@ -92,7 +95,6 @@ function RoomScreen() {
                                         </ListGroup.Item>
                                     </Col>
 
-                                    {/* New Host Rules and Policies Section */}
                                     <Col md={6}>
                                         <ListGroup.Item>
                                             <strong>Host Rules & Policies:</strong>
@@ -119,15 +121,16 @@ function RoomScreen() {
                         </Col>
                     </Row>
 
-                    <Row className="justify-content-center mt-4">
-                        <ListGroup.Item>
-                            <Link to={`/book/${room._id}`}>
-                                <Button className="btn btn-primary w-100">Book Now</Button>
-                            </Link>
-                        </ListGroup.Item>
-                    </Row>
-
-                    
+                    {/* Show "Book Now" button only if user is logged in */}
+                    {userInfo && (
+                        <Row className="justify-content-center mt-4">
+                            <ListGroup.Item>
+                                <Link to={`/book/${room._id}`}>
+                                    <Button className="btn btn-primary w-100">Book Now</Button>
+                                </Link>
+                            </ListGroup.Item>
+                        </Row>
+                    )}
                 </>
             )}
         </>
