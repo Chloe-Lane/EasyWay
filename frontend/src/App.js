@@ -8,6 +8,8 @@ import './bootstrap.min.css';
 import LoginScreen from "./screens/LoginScreen.jsx";
 import SearchResults from "./screens/SearchResult.jsx";
 import Map from "./components/Map";
+import RegisterScreen from "./screens/RegisterScreen.jsx";
+import ProtectedListingCreateScreen from "./screens/ProtectedListingCreateScreen.jsx";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
             <Route path='/login' element={<LoginScreen />} />
             <Route path="/search-results" element={<SearchResults />} />
             <Route path="/map" element={<Map />} /> {/* New Map Route */}
+            <Route path="/register" element={<RegisterScreen />} />
+            <Route path="/create-listing" element={<ProtectedListingCreateScreen />} />
           </Routes>  
         </Container>
       </div>

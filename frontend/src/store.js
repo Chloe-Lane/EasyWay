@@ -1,9 +1,10 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import {thunk} from 'redux-thunk';
-import { roomDetailsReducer, roomsListReducer } from './reducers/roomsReducers';
-import { userLoginReducer } from './reducers/userReducers';
+import { amenityListReducer, policyListReducer, roomCreateReducer, roomDetailsReducer, roomsListReducer } from './reducers/roomsReducers';
+import { userLoginReducer, userRegisterReducer } from './reducers/userReducers';
 import { searchRoomsReducer } from './reducers/roomsReducers';
 import { mapReducer } from './reducers/mapReducers';
+
 
 
 
@@ -13,6 +14,10 @@ const reducer = combineReducers({
     userLogin: userLoginReducer,
     searchRooms: searchRoomsReducer,
     map: mapReducer,
+    userRegister: userRegisterReducer,
+    roomCreate: roomCreateReducer,
+    amenityList: amenityListReducer,
+    policyList: policyListReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null

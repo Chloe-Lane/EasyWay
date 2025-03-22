@@ -7,12 +7,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
-        fields = ['name']
+        fields = ['id', 'name']
 
 class PolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = Policy
-        fields = ['name']
+        fields = ['id', 'name']
 
 class RoomSerializer(serializers.ModelSerializer):
     amenities = AmenitySerializer(many=True, read_only=True)
@@ -27,8 +27,8 @@ class UserSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField(read_only=True)
     isAdmin = serializers.SerializerMethodField(read_only=True)
     class Meta:
-        model = User
-        fields = ['id', '_id', 'username', 'email', 'name', 'isAdmin']
+        model = CustomUser
+        fields = ['id', '_id', 'username', 'email', 'name', 'isAdmin', 'role']
     
     def get__id(self, obj):
         return obj.id
@@ -37,17 +37,21 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.is_staff
     
     def get_name(self, obj):
-        name = obj.first_name
+        name = obj.username
         if name == '':
             name = obj.email
         return name
+    
+    def get_role(self, obj):
+        return obj.role
 
 class UserSerializerWithToken(UserSerializer):
     token = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
-        model = User
-        fields = ['id', '_id', 'username', 'email', 'name', 'isAdmin', 'token']
-    
+        model = CustomUser  # ✅ Use CustomUser here too
+        fields = ['id', '_id', 'username', 'email', 'name', 'isAdmin', 'role', 'token']
+
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)
         return str(token.access_token)
