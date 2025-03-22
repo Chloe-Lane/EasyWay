@@ -1,6 +1,12 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import (TokenObtainPairView,)
+from rest_framework.routers import DefaultRouter
+from django.urls import path, include
+from .views import create_booking, BookingViewSet, pending_bookings, booking_history
+
+router = DefaultRouter()
+router.register(r'bookings', BookingViewSet, basename='booking')
 
 urlpatterns = [
     path('rooms/', views.getRooms, name="rooms"),
@@ -13,4 +19,8 @@ urlpatterns = [
     path('rooms/create/', views.createRoom, name='create-room'),
     path('rooms/amenities/', views.get_amenities, name='amenities'),
     path('rooms/policies/', views.get_policies, name='policies'),
+    path('bookings/', create_booking, name="create-booking"),
+    path('bookings/pending/', pending_bookings, name='pending-bookings'),
+    path("bookings/history/", booking_history, name="booking-history"),
+    path('api/', include(router.urls)),
 ]

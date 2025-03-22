@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Row, Col, Image, ListGroup, Button } from 'react-bootstrap';
 import Rating from '../components/rating';
 import { Link, useParams } from 'react-router-dom';
@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { listRoomDetails } from '../actions/roomActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../index.css'; // Import the CSS file
 import Map from "../components/Map"; // Import the Map component
@@ -19,10 +18,6 @@ function RoomScreen() {
     const roomDetails = useSelector(state => state.roomDetails);
     const { room = {}, loading, error } = roomDetails;
 
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [savedDate, setSavedDate] = useState(null);
-
     useEffect(() => {
         dispatch(listRoomDetails(id));
     }, [dispatch, id]);
@@ -32,35 +27,6 @@ function RoomScreen() {
             dispatch(setMapLocation(room.latitude, room.longitude));
         }
     }, [dispatch, room]);
-    
-    const handleDateClick = (clickedDate) => {
-        if (!startDate || (startDate && endDate)) {
-            setStartDate(clickedDate);
-            setEndDate(null);
-        } else if (clickedDate >= startDate) {
-            setEndDate(clickedDate);
-        } else {
-            setStartDate(clickedDate);
-            setEndDate(null);
-        }
-    };
-
-    const isWithinRange = (date) => {
-        if (startDate && endDate) {
-            return date >= startDate && date <= endDate;
-        }
-        return false;
-    };
-
-    const handleSaveDate = () => {
-        setSavedDate({ startDate, endDate });
-    };
-
-    const handleClearDate = () => {
-        setStartDate(null);
-        setEndDate(null);
-        setSavedDate(null);
-    };
 
     return (
         <>
@@ -154,41 +120,14 @@ function RoomScreen() {
                     </Row>
 
                     <Row className="justify-content-center mt-4">
-                        <Col md={8} className="calendar-container">
-                            <div className="calendar-wrapper">
-                                <Calendar
-                                    className="large-calendar"
-                                    onClickDay={handleDateClick}
-                                    tileClassName={({ date, view }) => {
-                                        if (view === 'month') {
-                                            if (
-                                                (startDate && date.toDateString() === startDate.toDateString()) ||
-                                                (endDate && date.toDateString() === endDate.toDateString())
-                                            ) {
-                                                return 'selected-start-date';
-                                            }
-                                            if (isWithinRange(date)) {
-                                                return 'selected-range';
-                                            }
-                                        }
-                                        return null;
-                                    }}
-                                />
-                            </div>
-                            <div className="date-selection">
-                                <p><strong>Check-in Date:</strong> {startDate ? startDate.toDateString() : 'None'}</p>
-                                <p><strong>Checkout Date:</strong> {endDate ? endDate.toDateString() : 'None'}</p>
-                                <div className="button-group">
-                                    <Button variant="success" onClick={handleSaveDate} className="small-button">
-                                        SAVE DATE
-                                    </Button>
-                                    <Button variant="danger" onClick={handleClearDate} className="small-button">
-                                        CLEAR DATE
-                                    </Button>
-                                </div>
-                            </div>
-                        </Col>
+                        <ListGroup.Item>
+                            <Link to={`/book/${room._id}`}>
+                                <Button className="btn btn-primary w-100">Book Now</Button>
+                            </Link>
+                        </ListGroup.Item>
                     </Row>
+
+                    
                 </>
             )}
         </>

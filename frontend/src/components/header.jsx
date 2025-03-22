@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../actions/userActions';
 import RoomSearchBar from "./RoomSearchBar";
+import '../index.css';
 
 function Header() {
   const dispatch = useDispatch();
@@ -16,6 +17,8 @@ function Header() {
     navigate('/login');
   };
 
+  console.log("User Info:", userInfo); // Debugging: Check userInfo in the console
+
   return (
     <Navbar expand="lg" className="bg-white shadow-sm fixed-top w-100">
       <Container fluid className="px-4">
@@ -25,12 +28,21 @@ function Header() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
         <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link as={Link} to="/">
+              <i className="fa-solid fa-house"></i> Home
+            </Nav.Link>
+            <Nav.Link as={Link} to="/booking-history">
+              <i className="fas fa-history"></i> My Bookings
+            </Nav.Link>
+          </Nav>
+
           <div className="mx-auto w-50">
             <RoomSearchBar />
           </div>
 
           <Nav className="ms-auto">
-            {userInfo?.role === 'host' && (
+            {(userInfo?.role === "host" || userInfo?.role === "admin") && (
               <Nav.Link as={Link} to="/create-listing" className="fw-semibold">
                 <i className="fas fa-plus"></i> Create Listing
               </Nav.Link>

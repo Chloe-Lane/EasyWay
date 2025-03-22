@@ -67,3 +67,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         
         return data
+    
+# Booking Serializer
+class BookingSerializer(serializers.ModelSerializer):
+    room_name = serializers.CharField(source="room.name", read_only=True)
+
+    class Meta:
+        model = Booking
+        fields = '__all__'

@@ -10,6 +10,9 @@ import SearchResults from "./screens/SearchResult.jsx";
 import Map from "./components/Map";
 import RegisterScreen from "./screens/RegisterScreen.jsx";
 import ProtectedListingCreateScreen from "./screens/ProtectedListingCreateScreen.jsx";
+import BookingScreen from "./screens/BookingScreen";
+import BookingRequestsScreen from "./screens/BookingRequestsScreen";
+import BookingHistory from "./screens/BookingHistory";
 
 function App() {
   return (
@@ -25,6 +28,9 @@ function App() {
             <Route path="/map" element={<Map />} /> {/* New Map Route */}
             <Route path="/register" element={<RegisterScreen />} />
             <Route path="/create-listing" element={<ProtectedListingCreateScreen />} />
+            <Route path="/book/:id" element={<BookingScreen />} />
+            <Route path="/requests" element={<BookingRequestsScreen />} />
+            <Route path="/booking-history" element={<BookingHistory />} />
           </Routes>  
         </Container>
       </div>
