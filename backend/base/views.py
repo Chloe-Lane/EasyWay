@@ -1,16 +1,15 @@
-from django.http import JsonResponse
-from base.rooms import rooms
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
-from .models import Room
-from .serializers import *
-from  .models import *
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.contrib.auth.hashers import make_password
-from rest_framework import status
-from .serializers import RoomSerializer
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from rest_framework import status
+from .models import *
+from .serializers import *
+import json
+from rest_framework.parsers import MultiPartParser, FormParser
 
 @api_view(['GET'])
 def getRooms(request):
@@ -25,42 +24,47 @@ def getRoom(request, pk):
     serializer = RoomSerializer(room, many=False)
     return Response(serializer.data)
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
+
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getUserProfile(request):
     user = request.user
     serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def getUsers(request):
-    users = User.objects.all()
+    users = CustomUser.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
 
 @api_view(['POST'])
 def registerUser(request):
     data = request.data
+    role = data.get('role', 'user')  # Default role is 'user'
 
     try:
-        user = User.objects.create(
-            first_name=data['name'],
-            username=data['name'],
+        user = CustomUser.objects.create(
+            username=data['username'],
             email=data['email'],
+            role=role,
             password=make_password(data['password'])
         )
-        serializer = UserSerializerWithToken(user, many = False)
+        serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
-    except:
-        message = {'detail': 'User with this email already exists'}
-        return Response(message, status=status.HTTP_400_BAD_REQUEST)
-    
 
-    
-from django.db.models import Q
+    except Exception as e:
+        print("Registration Error:", e)
+        message = {'detail': 'User with this email or username already exists'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 def search_rooms(request):
@@ -78,5 +82,82 @@ def search_rooms(request):
             amenity_filters |= Q(amenities__name__icontains=amenity)  # OR condition
         rooms = rooms.filter(amenity_filters)
 
-    serializer = RoomSerializer(rooms.distinct(), many=True)  # Use `.distinct()` to avoid duplicates
+    serializer = RoomSerializer(rooms.distinct(), many=True)  # Avoid duplicates
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def get_amenities(request):
+    amenities = Amenity.objects.all()
+    serializer = AmenitySerializer(amenities, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def get_policies(request):
+    policies = Policy.objects.all()
+    serializer = PolicySerializer(policies, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def createRoom(request):
+    user = request.user
+    data = request.data
+
+    try:
+        room = Room.objects.create(
+            user=user,
+            name=data['name'],
+            price=data['price'],
+            location=data['location'],
+            description=data['description'],
+            rating=data.get('rating', 0),
+            numReviews=data.get('numReviews', 0),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+        )
+
+        # Safe JSON loading with fallback
+        selected_amenities = json.loads(data.get('selected_amenities') or '[]')
+        for amenity_id in selected_amenities:
+            if str(amenity_id).strip() == '':
+                continue  # Skip empty strings
+            try:
+                amenity = Amenity.objects.get(id=int(amenity_id))
+                room.amenities.add(amenity)
+            except Amenity.DoesNotExist:
+                continue
+        
+        new_amenities = json.loads(data.get('new_amenities') or '[]')
+        for amenity_name in new_amenities:
+            amenity, _ = Amenity.objects.get_or_create(name=amenity_name)
+            room.amenities.add(amenity)
+
+        selected_policies = json.loads(data.get('selected_policies') or '[]')
+        for policy_id in selected_policies:
+            if str(policy_id).strip() == '':
+                continue
+            try:
+                policy = Policy.objects.get(id=int(policy_id))
+                room.policies.add(policy)
+            except Policy.DoesNotExist:
+                continue
+
+        new_policies = json.loads(data.get('new_policies') or '[]')
+        for policy_name in new_policies:
+            policy, _ = Policy.objects.get_or_create(name=policy_name)
+            room.policies.add(policy)
+
+        # Image Handling ✅
+        if 'image' in request.FILES:
+            room.image = request.FILES['image']
+            room.save()
+
+        serializer = RoomSerializer(room, many=False)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        print(str(e))  # Good for debugging during development
+        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
