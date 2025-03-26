@@ -1,6 +1,7 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
-from rest_framework_simplejwt.views import (TokenObtainPairView,)
+
+
 
 urlpatterns = [
     path('rooms/', views.getRooms, name="rooms"),
@@ -13,4 +14,7 @@ urlpatterns = [
     path('rooms/create/', views.createRoom, name='create-room'),
     path('rooms/amenities/', views.get_amenities, name='amenities'),
     path('rooms/policies/', views.get_policies, name='policies'),
+    path('rooms/<str:room_id>/update/', views.update_room, name='update-room'),
+    path('chats/', views.user_chat_rooms, name='get-all-chats'),
+    path('chat/<str:room_id>/', views.get_chat_messages, name='get-user-chats')	
 ]

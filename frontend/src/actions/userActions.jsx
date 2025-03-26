@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 import {
     USER_LOGIN_REQUEST,
@@ -8,6 +9,9 @@ import {
     USER_REGISTER_SUCCESS,
     USER_REGISTER_FAIL,
     USER_SET_ROLE,
+    USER_PROFILE_REQUEST,
+    USER_PROFILE_SUCCESS,
+    USER_PROFILE_FAIL,
 } from '../constants/userConstants';
 
 import { 
@@ -41,6 +45,41 @@ export const login = (username, password) => async (dispatch) => {
         });
     }
 };
+export const getUserProfile = () => async (dispatch, getState) => {
+    try {
+      dispatch({ type: USER_PROFILE_REQUEST });
+  
+      const {
+        userLogin: { userInfo },
+      } = getState();
+  
+      if (!userInfo || !userInfo.token) {
+        // Handle token missing or invalid case
+        dispatch({
+          type: USER_PROFILE_FAIL,
+          payload: 'Token is missing or invalid',
+        });
+        return;
+      }
+  
+      const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+  
+      const { data } = await axios.get('/users/profile/', config);
+  
+      dispatch({
+        type: USER_PROFILE_SUCCESS,
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: USER_PROFILE_FAIL,
+        payload:
+          error.response && error.response.data.detail
+            ? error.response.data.detail
+            : error.message,
+      });
+    }
+  };
 
 // ✅ REGISTER Action with accountType support
 export const register = (username, email, password, role) => async (dispatch) => {
@@ -80,7 +119,7 @@ export const searchRooms = (query = '', amenities = []) => async (dispatch) => {
         if (query) params.append('q', query);
         amenities.forEach((amenity) => params.append('amenities[]', amenity)); // Include amenities
 
-        const { data } = await axios.get(`/api/rooms/search/?${params.toString()}`);
+        const { data } = await axios.get(`/rooms/search/?${params.toString()}`);
 
         dispatch({ type: SEARCH_ROOMS_SUCCESS, payload: data });
 
@@ -91,3 +130,8 @@ export const searchRooms = (query = '', amenities = []) => async (dispatch) => {
         });
     }
 };
+
+export const setUser = (userId) => (dispatch) => {
+    dispatch({ type: 'USER_SET_ID', payload: userId });
+};
+

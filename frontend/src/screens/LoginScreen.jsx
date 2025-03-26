@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { login } from "../actions/userActions";
 import FormContainer from "../components/FormContainer";
+import { setUser } from '../actions/userActions'; // Adjust path as needed
 
 function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -20,11 +21,16 @@ function LoginScreen() {
   const userLogin = useSelector((state) => state.userLogin);
   const { error, loading, userInfo } = userLogin;
 
+
   useEffect(() => {
     if (userInfo) {
-      navigate(redirect);
+        console.log("✅ User logged in. Setting userId:", userInfo.id);
+        localStorage.setItem("userId", userInfo.id);  
+        navigate(redirect);
     }
-  }, [navigate, userInfo, redirect]);
+}, [navigate, userInfo, redirect]); 
+
+
 
   const submitHandler = (e) => {
     e.preventDefault();

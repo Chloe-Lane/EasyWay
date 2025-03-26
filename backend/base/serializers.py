@@ -3,6 +3,8 @@ from .models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Message  # Ensure you import the Message model
+
 
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,13 +17,14 @@ class PolicySerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class RoomSerializer(serializers.ModelSerializer):
+    host = serializers.PrimaryKeyRelatedField(read_only=True)    
     amenities = AmenitySerializer(many=True, read_only=True)
     policies = PolicySerializer(many=True, read_only=True)
 
     class Meta:
         model = Room
         fields = '__all__'  # Includes amenities
-        
+
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
     _id = serializers.SerializerMethodField(read_only=True)
@@ -67,3 +70,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         
         return data
+    
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(many=False, read_only=True)  # Assuming you have a UserSerializer defined
+    room = serializers.PrimaryKeyRelatedField(read_only=True)  # Or use a serializer for the room if needed
+
+    class Meta:
+        model = Message
+        fields = '__all__'  # Or specify the fields you want to include
+
+

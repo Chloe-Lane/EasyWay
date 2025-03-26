@@ -41,7 +41,7 @@ const SearchResults = () => {
             ) : rooms.length > 0 ? (
                 <Row className="g-3 justify-content-center">
                     {rooms.map((room) => (
-                        <Col key={room.id} lg={2} md={4} sm={6} className="d-flex">
+                        <Col key={room._id} lg={2} md={4} sm={6} className="d-flex">
                             <Card className="border-0 shadow-sm rounded-4 w-100">
                                 <Link to={`/rooms/${room._id}`}>
                                     <Card.Img

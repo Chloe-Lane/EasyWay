@@ -10,6 +10,8 @@ import SearchResults from "./screens/SearchResult.jsx";
 import Map from "./components/Map";
 import RegisterScreen from "./screens/RegisterScreen.jsx";
 import ProtectedListingCreateScreen from "./screens/ProtectedListingCreateScreen.jsx";
+import UpdateRoomScreen from "./screens/UpdateRoomScreen.jsx";
+import ChatScreen from "./screens/ChatScreen.jsx";
 
 function App() {
   return (
@@ -25,7 +27,11 @@ function App() {
             <Route path="/map" element={<Map />} /> {/* New Map Route */}
             <Route path="/register" element={<RegisterScreen />} />
             <Route path="/create-listing" element={<ProtectedListingCreateScreen />} />
-          </Routes>  
+            <Route path="/update/room/:id" element={<UpdateRoomScreen />}/>
+            <Route path="/chat/room/:roomName" element={<ChatScreen />} />
+            <Route path="/chat/:userId/:hostId" element={<ChatScreen />} />
+
+            </Routes>  
         </Container>
       </div>
       <Footer />

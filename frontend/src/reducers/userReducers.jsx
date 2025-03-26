@@ -1,47 +1,67 @@
+
 import {
-    USER_LOGIN_REQUEST, 
-    USER_LOGIN_SUCCESS, 
-    USER_LOGIN_FAIL, 
-    USER_LOGOUT,
-    USER_REGISTER_REQUEST, 
-    USER_REGISTER_SUCCESS, 
-    USER_REGISTER_FAIL,
-    USER_SET_ROLE,
+  USER_LOGIN_REQUEST, 
+  USER_LOGIN_SUCCESS, 
+  USER_LOGIN_FAIL, 
+  USER_LOGOUT,
+  USER_REGISTER_REQUEST, 
+  USER_REGISTER_SUCCESS, 
+  USER_REGISTER_FAIL,
+  USER_SET_ROLE,
+  USER_SET_ID,
+  USER_PROFILE_REQUEST,
+  USER_PROFILE_SUCCESS,
+  USER_PROFILE_FAIL,
 } from '../constants/userConstants'
 
 
 
 export const userLoginReducer = (state={}, action) => {
-    switch (action.type) {
-        case USER_LOGIN_REQUEST:
-            return {loading:true}
-        
-        case USER_LOGIN_SUCCESS:
-            return {loading:false, userInfo: action.payload}
-        
-        case USER_LOGIN_FAIL:
-            return {loading:false, error: action.payload}
+  switch (action.type) {
+      case USER_LOGIN_REQUEST:
+          return {loading:true}
+      
+      case USER_LOGIN_SUCCESS:
+          return {loading:false, userInfo: action.payload}
 
-        case USER_LOGOUT:
-            return {}
+      case USER_SET_ID:  // ✅ Add this
+          return { ...state, userId: action.payload };
 
-        default:
-            return state
+      case USER_LOGIN_FAIL:
+          return {loading:false, error: action.payload}
 
-    }
-}
+      case USER_LOGOUT:
+          return {}
+
+      default:
+          return state
+  }
+};
 
 export const userRegisterReducer = (state = {}, action) => {
-    switch (action.type) {
-      case USER_REGISTER_REQUEST:
-        return { loading: true };
-      case USER_REGISTER_SUCCESS:
-        return { loading: false, userInfo: action.payload };
-      case USER_REGISTER_FAIL:
-        return { loading: false, error: action.payload };
-      case USER_SET_ROLE:
-        return { ...state, role: action.payload };
-      default:
-        return state;
-    }
-  };
+  switch (action.type) {
+    case USER_REGISTER_REQUEST:
+      return { loading: true };
+    case USER_REGISTER_SUCCESS:
+      return { loading: false, userInfo: action.payload };
+    case USER_REGISTER_FAIL:
+      return { loading: false, error: action.payload };
+    case USER_SET_ROLE:
+      return { ...state, role: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const userProfileReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER_PROFILE_REQUEST:
+      return { loading: true };
+    case USER_PROFILE_SUCCESS:
+      return { loading: false, userInfo: action.payload };
+    case USER_PROFILE_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};

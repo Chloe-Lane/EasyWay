@@ -1,6 +1,7 @@
 from django.db import models
 import os, random
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth import get_user_model
 # Create your models here.
 
 def get_filename_ext(filepath):
@@ -70,13 +71,14 @@ class Policy(models.Model):
 
     def __str__(self):
         return self.name
-
+    
 class Room(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    lister = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='lister_rooms')
+    host = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True, related_name='hosted_rooms')  # Allow null values
     _id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length= 200, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
     amenities = models.ManyToManyField(Amenity, related_name='rooms', blank=True)
-    image = models.ImageField(upload_to=upload_image_path,null=True, blank=True)
+    image = models.ImageField(upload_to='uploads/', null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     location = models.CharField(max_length=200, null=True, blank=True)
     policies = models.ManyToManyField(Policy, related_name='rooms', blank=True)
@@ -88,3 +90,15 @@ class Room(models.Model):
 
     def __str__(self):
         return self.name
+
+class ChatRoom(models.Model):
+    user = models.ForeignKey(CustomUser, related_name='user', on_delete=models.CASCADE, null = True, blank = True)
+    host = models.ForeignKey(CustomUser, related_name='host', on_delete=models.CASCADE, null = True, blank = True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Message(models.Model):
+    room = models.ForeignKey(ChatRoom, related_name='messages', on_delete=models.CASCADE)
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+

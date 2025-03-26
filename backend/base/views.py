@@ -5,11 +5,17 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthentic
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, generics
 from .models import *
 from .serializers import *
 import json
 from rest_framework.parsers import MultiPartParser, FormParser
+from base import views
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
+
 
 @api_view(['GET'])
 def getRooms(request):
@@ -92,6 +98,37 @@ def get_amenities(request):
     serializer = AmenitySerializer(amenities, many=True)
     return Response(serializer.data)
 
+@csrf_exempt
+def edit_room(request, id):
+    try:
+        room = Room.objects.get(id=id)
+
+        if request.method == 'GET':  # Fetch room details
+            return JsonResponse({
+                'id': room._id,
+                'name': room.name,
+                'price': room.price,
+                'location': room.location,
+                'description': room.description,
+                'latitude': room.latitude,
+                'longitude': room.longitude
+            })
+
+        elif request.method == 'PUT':  # Update room details
+            data = json.loads(request.body)
+            room.name = data.get('name', room.name)
+            room.price = data.get('price', room.price)
+            room.location = data.get('location', room.location)
+            room.description = data.get('description', room.description)
+            room.latitude = data.get('latitude', room.latitude)
+            room.longitude = data.get('longitude', room.longitude)
+            room.save()
+            
+            return JsonResponse({'message': 'Room updated successfully'})
+
+    except Room.DoesNotExist:
+        return JsonResponse({'error': 'Room not found'}, status=404)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def get_policies(request):
@@ -161,3 +198,119 @@ def createRoom(request):
     except Exception as e:
         print(str(e))  # Good for debugging during development
         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def update_room(request, room_id):
+    try:
+        room = Room.objects.get(_id=room_id)
+
+        # ✅ Restrict access: Only the room owner or an admin can update
+        if request.user != room.user:
+            return Response(
+                {"detail": "Not authorized to update this room"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        data = request.data
+
+        print(f"Logged-in User: {request.user.id}, Room Owner: {room.user.id}")
+
+
+        # Update basic fields
+        room.name = data.get('name', room.name)
+        room.price = data.get('price', room.price)
+        room.location = data.get('location', room.location)
+        room.description = data.get('description', room.description)
+        room.rating = data.get('rating', room.rating)
+        room.numReviews = data.get('numReviews', room.numReviews)
+        room.latitude = data.get('latitude', room.latitude)
+        room.longitude = data.get('longitude', room.longitude)
+
+        # Update Amenities (safe JSON handling)
+        if 'selected_amenities' in data:
+            room.amenities.clear()
+            selected_amenities = json.loads(data.get('selected_amenities', '[]'))
+            for amenity_id in selected_amenities:
+                try:
+                    amenity = Amenity.objects.get(id=int(amenity_id))
+                    room.amenities.add(amenity)
+                except Amenity.DoesNotExist:
+                    continue
+
+        if 'new_amenities' in data:
+            new_amenities = json.loads(data.get('new_amenities', '[]'))
+            for amenity_name in new_amenities:
+                amenity, _ = Amenity.objects.get_or_create(name=amenity_name)
+                room.amenities.add(amenity)
+
+        # Update Policies
+        if 'selected_policies' in data:
+            room.policies.clear()
+            selected_policies = json.loads(data.get('selected_policies', '[]'))
+            for policy_id in selected_policies:
+                try:
+                    policy = Policy.objects.get(id=int(policy_id))
+                    room.policies.add(policy)
+                except Policy.DoesNotExist:
+                    continue
+
+        if 'new_policies' in data:
+            new_policies = json.loads(data.get('new_policies', '[]'))
+            for policy_name in new_policies:
+                policy, _ = Policy.objects.get_or_create(name=policy_name)
+                room.policies.add(policy)
+
+        # Handle Image Update
+        if 'image' in request.FILES:
+            room.image = request.FILES['image']
+
+        room.save()
+
+        serializer = RoomSerializer(room, many=False)
+        return Response(serializer.data)
+
+    except Room.DoesNotExist:
+        return Response({"detail": "Room not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+class MessageListView(generics.ListAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        room_id = self.kwargs["room_id"]
+        return Message.objects.filter(room_id=room_id).order_by("timestamp")
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_chat_messages(request, room_id):
+    try:
+        user_id, host_id = map(int, room_id.split('_'))
+
+        # Check both combinations (user-host and host-user)
+        chat_room = ChatRoom.objects.filter(user_id=user_id, host_id=host_id).first()
+        if not chat_room:
+            chat_room = ChatRoom.objects.filter(user_id=host_id, host_id=user_id).first()
+
+        if not chat_room:
+            return Response({'detail': 'Chat room does not exist.'}, status=404)
+
+        messages = chat_room.messages.all().order_by('timestamp')
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+    
+    except Exception as e:
+        print(f"❌ Error fetching messages: {e}")
+        return Response({'detail': 'Invalid room or server error.'}, status=400)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_chat_rooms(request):
+    user = request.user
+    # ✅ Get all rooms where the user is either user or host
+    chat_rooms = ChatRoom.objects.filter(models.Q(user=user) | models.Q(host=user))
+    serializer = ChatRoomSerializer(chat_rooms, many=True)
+    return Response(serializer.data)

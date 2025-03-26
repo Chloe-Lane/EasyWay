@@ -2,33 +2,29 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchRooms } from '../actions/roomActions';
 import { useNavigate } from 'react-router-dom';
-import { Form, FormControl, ListGroup, Dropdown, Button, InputGroup } from 'react-bootstrap';
+import { Form, FormControl, ListGroup, Button, InputGroup, Modal } from 'react-bootstrap';
 import { FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaUtensils, FaPaw } from "react-icons/fa";
-
 
 const RoomSearchBar = () => {
     const [query, setQuery] = useState('');
     const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [showAmenities, setShowAmenities] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const searchRef = useRef(null);
     
-
     const { rooms = [] } = useSelector((state) => state.searchRooms) || { rooms: [] };
 
-    // Trigger search when query or filters change
     useEffect(() => {
         if (query.length > 1 || selectedAmenities.length > 0) {
             dispatch(searchRooms(query, selectedAmenities));
         } else {
             setShowDropdown(false);
-            dispatch(searchRooms('')); // Reset state when input is cleared
+            dispatch(searchRooms(''));
         }
     }, [query, selectedAmenities, dispatch]);
 
-    // Handle input change
     const handleChange = (e) => {
         const value = e.target.value;
         setQuery(value);
@@ -38,7 +34,6 @@ const RoomSearchBar = () => {
         }
     };
 
-    // Handle search submission
     const handleSubmit = (e) => {
         e.preventDefault();
         if (query || selectedAmenities.length > 0) {
@@ -46,14 +41,6 @@ const RoomSearchBar = () => {
         }
     };
 
-    // Handle selection from dropdown
-    const handleSelect = (name) => {
-        setQuery('');
-        setShowDropdown(false);
-        navigate(`/search-results?q=${name}`);
-    };
-
-    // Handle filter selection and navigate instantly
     const toggleAmenity = (amenity) => {
         setSelectedAmenities((prev) => {
             const updatedAmenities = prev.includes(amenity)
@@ -79,7 +66,6 @@ const RoomSearchBar = () => {
         <div className="position-relative" ref={searchRef}>
             <Form onSubmit={handleSubmit}>
                 <InputGroup>
-                    {/* Search Input */}
                     <FormControl
                         type="search"
                         placeholder="Search rooms..."
@@ -90,41 +76,18 @@ const RoomSearchBar = () => {
                         className="me-2"
                         aria-label="Search"
                     />
-                    <Dropdown show={showAmenities} onToggle={(isOpen) => setShowAmenities(isOpen)}>
-                        <Dropdown.Toggle variant="outline-secondary" className="px-3 rounded">
-                            Filters
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu className="p-3 shadow-lg rounded" style={{ width: "250px" }}>
-                            <div className="d-flex flex-wrap">
-                                {amenitiesList.map(({ name, icon }) => (
-                                    <div key={name} className="w-50 d-flex align-items-center mb-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedAmenities.includes(name)}
-                                            readOnly
-                                            className="me-2"
-                                            onClick={() => toggleAmenity(name)}
-                                        />
-                                        {icon} <span className="ms-2">{name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </Dropdown.Menu>
-                    </Dropdown>
-
-                    {/* Search Button */}
+                    <Button variant="outline-secondary" onClick={() => setShowModal(true)}>Filters</Button>
                     <Button type="submit" variant="primary">Search</Button>
                 </InputGroup>
             </Form>
 
-            {/* Search Suggestions Dropdown */}
             {showDropdown && rooms.length > 0 && (
                 <ListGroup className="position-absolute w-100 bg-white border shadow mt-1">
                     {rooms.map((room) => (
                         <ListGroup.Item
-                            key={room.id}
+                            key={room._id}
                             className="d-flex align-items-center cursor-pointer"
-                            onMouseDown={() => handleSelect(room.name)}
+                            onMouseDown={() => navigate(`/search-results?q=${room.name}`)}
                         >
                             {room.image && (
                                 <img src={room.image} alt={room.name} className="me-2" width="30" height="30" />
@@ -134,6 +97,32 @@ const RoomSearchBar = () => {
                     ))}
                 </ListGroup>
             )}
+
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select Amenities</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="d-flex flex-wrap">
+                        {amenitiesList.map(({ name, icon }) => (
+                            <div key={name} className="w-50 d-flex align-items-center mb-2">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedAmenities.includes(name)}
+                                    readOnly
+                                    className="me-2"
+                                    onClick={() => toggleAmenity(name)}
+                                />
+                                {icon} <span className="ms-2">{name}</span>
+                            </div>
+                        ))}
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
+                    <Button variant="primary" onClick={() => setShowModal(false)}>Apply</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
