@@ -13,7 +13,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from base import views
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.contrib.auth.models import User
+from rest_framework import status, viewsets
 
 
 
@@ -98,37 +100,6 @@ def get_amenities(request):
     serializer = AmenitySerializer(amenities, many=True)
     return Response(serializer.data)
 
-@csrf_exempt
-def edit_room(request, id):
-    try:
-        room = Room.objects.get(id=id)
-
-        if request.method == 'GET':  # Fetch room details
-            return JsonResponse({
-                'id': room._id,
-                'name': room.name,
-                'price': room.price,
-                'location': room.location,
-                'description': room.description,
-                'latitude': room.latitude,
-                'longitude': room.longitude
-            })
-
-        elif request.method == 'PUT':  # Update room details
-            data = json.loads(request.body)
-            room.name = data.get('name', room.name)
-            room.price = data.get('price', room.price)
-            room.location = data.get('location', room.location)
-            room.description = data.get('description', room.description)
-            room.latitude = data.get('latitude', room.latitude)
-            room.longitude = data.get('longitude', room.longitude)
-            room.save()
-            
-            return JsonResponse({'message': 'Room updated successfully'})
-
-    except Room.DoesNotExist:
-        return JsonResponse({'error': 'Room not found'}, status=404)
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def get_policies(request):
@@ -207,7 +178,7 @@ def update_room(request, room_id):
         room = Room.objects.get(_id=room_id)
 
         # ✅ Restrict access: Only the room owner or an admin can update
-        if request.user != room.user:
+        if request.user != room.lister:
             return Response(
                 {"detail": "Not authorized to update this room"},
                 status=status.HTTP_403_FORBIDDEN
@@ -215,7 +186,7 @@ def update_room(request, room_id):
 
         data = request.data
 
-        print(f"Logged-in User: {request.user.id}, Room Owner: {room.user.id}")
+        print(f"Logged-in User: {request.user.id}, Room Owner: {room.lister.id}")
 
 
         # Update basic fields
@@ -313,4 +284,45 @@ def user_chat_rooms(request):
     # ✅ Get all rooms where the user is either user or host
     chat_rooms = ChatRoom.objects.filter(models.Q(user=user) | models.Q(host=user))
     serializer = ChatRoomSerializer(chat_rooms, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def create_booking(request):
+    data = request.data
+    if "payment_status" not in data or data["payment_status"] != "Completed":
+        return Response({"message": "Payment required before booking."}, status=400)
+    
+    serializer = BookingSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+class BookingViewSet(viewsets.ModelViewSet):
+    serializer_class = BookingSerializer
+    
+    def get_queryset(self):
+        email = self.request.query_params.get("email")
+        if email:
+            return Booking.objects.filter(email=email)
+        return Booking.objects.all()
+
+@api_view(['POST'])
+def process_payment(request):
+    return Response({"message": "Payment successful!"}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def user_bookings(request, email):
+    bookings = Booking.objects.filter(email=email).order_by('-created_at')
+    serializer = BookingSerializer(bookings, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def booking_history(request):
+    email = request.query_params.get("email")
+    if not email:
+        return Response({"message": "Email is required to fetch booking history."}, status=400)
+    
+    bookings = Booking.objects.filter(email=email)
+    serializer = BookingSerializer(bookings, many=True)
     return Response(serializer.data)

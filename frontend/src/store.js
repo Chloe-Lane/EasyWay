@@ -6,9 +6,6 @@ import { searchRoomsReducer } from './reducers/roomsReducers';
 import { mapReducer } from './reducers/mapReducers';
 import { chatReducer } from './reducers/ChatReducers'
 
-
-
-
 const reducer = combineReducers({
     roomsList: roomsListReducer,
     roomDetails: roomDetailsReducer,
@@ -22,6 +19,7 @@ const reducer = combineReducers({
     roomUpdate: roomUpdateReducer,
     chat: chatReducer,
     userProfile: userProfileReducer,
+    roomList: roomsListReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null
@@ -36,6 +34,7 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 
 });
+
 
 export default store;
 

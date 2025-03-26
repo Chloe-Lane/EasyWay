@@ -162,12 +162,21 @@ export const updateRoom = (roomId, roomData) => async (dispatch, getState) => {
       };
 
       const formData = new FormData();
+
       for (const key in roomData) {
           if (Array.isArray(roomData[key])) {
-              formData.append(key, JSON.stringify(roomData[key]));
+              // Append array elements individually
+              roomData[key].forEach((item) => {
+                  formData.append(`${key}[]`, item);
+              });
           } else if (roomData[key] !== null) {
               formData.append(key, roomData[key]);
           }
+      }
+
+      // Handle images separately (if applicable)
+      if (roomData.images) {
+          roomData.images.forEach((image) => formData.append('images', image));
       }
 
       const { data } = await axios.put(`/rooms/${roomId}/update/`, formData, config);

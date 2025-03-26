@@ -16,15 +16,6 @@ class PolicySerializer(serializers.ModelSerializer):
         model = Policy
         fields = ['id', 'name']
 
-class RoomSerializer(serializers.ModelSerializer):
-    host = serializers.PrimaryKeyRelatedField(read_only=True)    
-    amenities = AmenitySerializer(many=True, read_only=True)
-    policies = PolicySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Room
-        fields = '__all__'  # Includes amenities
-
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
     _id = serializers.SerializerMethodField(read_only=True)
@@ -81,3 +72,24 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'  # Or specify the fields you want to include
 
 
+class RoomSerializer(serializers.ModelSerializer):
+    lister = UserSerializer(read_only=True)
+    amenities = AmenitySerializer(many=True, read_only=True)
+    policies = PolicySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Room
+        fields = '__all__'  # Includes amenities
+    
+    # Booking Serializer
+class BookingSerializer(serializers.ModelSerializer):
+    room_name = serializers.CharField(source="room.name", read_only=True)
+
+    class Meta:
+        model = Booking
+        fields = '__all__'
+
+class ChatRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatRoom
+        fields = '__all__'

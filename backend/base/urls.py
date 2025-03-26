@@ -1,6 +1,9 @@
 from django.urls import path, re_path
 from . import views
-
+from .views import create_booking, BookingViewSet, booking_history
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'bookings', BookingViewSet, basename='booking')
 
 
 urlpatterns = [
@@ -16,5 +19,7 @@ urlpatterns = [
     path('rooms/policies/', views.get_policies, name='policies'),
     path('rooms/<str:room_id>/update/', views.update_room, name='update-room'),
     path('chats/', views.user_chat_rooms, name='get-all-chats'),
-    path('chat/<str:room_id>/', views.get_chat_messages, name='get-user-chats')	
+    path('chat/<str:room_id>/', views.get_chat_messages, name='get-user-chats'),
+    path('bookings/', create_booking, name="create-booking"),
+    path("bookings/history/", booking_history, name="booking-history"),
 ]

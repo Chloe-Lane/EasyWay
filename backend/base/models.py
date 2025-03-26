@@ -74,7 +74,6 @@ class Policy(models.Model):
     
 class Room(models.Model):
     lister = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='lister_rooms')
-    host = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True, related_name='hosted_rooms')  # Allow null values
     _id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     amenities = models.ManyToManyField(Amenity, related_name='rooms', blank=True)
@@ -96,9 +95,40 @@ class ChatRoom(models.Model):
     host = models.ForeignKey(CustomUser, related_name='host', on_delete=models.CASCADE, null = True, blank = True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'host')
+
+    def __str__(self):
+        return f"ChatRoom: {self.user.username} ↔ {self.host.username}"
+
 class Message(models.Model):
     room = models.ForeignKey(ChatRoom, related_name='messages', on_delete=models.CASCADE)
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.sender.username}: {self.content[:30]}..."
+
+# Booking model
+class Booking(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Completed", "Completed"),
+        ("Cancelled", "Cancelled"),
+    ]
+
+    _id = models.AutoField(primary_key=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    check_in = models.DateField()
+    check_out = models.DateField()
+    guests = models.PositiveIntegerField()
+    payment_status = models.CharField(
+        max_length=10, choices=PAYMENT_STATUS_CHOICES, default="Completed"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Booking {self._id} for {self.room.name} - {self.payment_status}"

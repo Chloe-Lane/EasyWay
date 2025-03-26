@@ -13,6 +13,7 @@ import ProtectedListingCreateScreen from "./screens/ProtectedListingCreateScreen
 import UpdateRoomScreen from "./screens/UpdateRoomScreen.jsx";
 import ChatScreen from "./screens/ChatScreen.jsx";
 
+
 function App() {
   return (
     <Router>
@@ -30,7 +31,6 @@ function App() {
             <Route path="/update/room/:id" element={<UpdateRoomScreen />}/>
             <Route path="/chat/room/:roomName" element={<ChatScreen />} />
             <Route path="/chat/:userId/:hostId" element={<ChatScreen />} />
-
             </Routes>  
         </Container>
       </div>

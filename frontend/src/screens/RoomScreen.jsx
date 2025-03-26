@@ -187,19 +187,17 @@ function RoomScreen() {
                                             setSavedDate(null);
                                         }} className="rounded-pill">Clear</Button>
                                     </div>
-                                    {userInfo && room.host && userInfo._id === room.host._id && (
-    <Link to={`/edit-room/${room._id}`} className="btn btn-primary">
-        Edit Listing
-    </Link>
-)}
+                                    {userInfo && room?.lister && userInfo.username === room.lister.username && (
+                                <Link to={`/update/room/${room._id}`} className="btn btn-primary">
+                                    Edit Listing
+                                </Link>
+                                )}
 
-{userInfo && room.host && (
-    <Link to={`/chat/${userInfo._id}/${room.host._id}`} className="btn btn-primary mt-3">
-        💬 Message Host
-    </Link>
-)}
-
-      
+                                {userInfo && room?.lister && userInfo.username !== room.lister.username && (
+                                <Link to={`/chat/${userInfo.id}/${room.lister.id}`} className="btn btn-primary mt-3">
+                                    💬 Message Host
+                                </Link>
+                                )}
                                 </Card.Body>
                             </Card>
                         </Col>

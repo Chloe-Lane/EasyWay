@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateRoom, getRoomDetails } from '../actions/roomActions';
+import { updateRoom } from '../actions/roomActions';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Button, Container, Spinner, Alert, Card, Row, Col } from 'react-bootstrap';
 import { listRoomDetails } from '../actions/roomActions'; 
@@ -14,6 +14,10 @@ const UpdateRoomScreen = () => {
   const { userInfo } = useSelector((state) => state.userLogin);
   const { loading: loadingRoom, error: errorRoom, room } = useSelector((state) => state.roomDetails);
   const { loading: loadingUpdate, error: errorUpdate, success } = useSelector((state) => state.roomUpdate);
+
+  useEffect(() => {
+    console.log(userInfo)
+  },[])
 
   // ✅ State for form fields
   const [formData, setFormData] = useState({
@@ -32,6 +36,7 @@ const UpdateRoomScreen = () => {
   useEffect(() => {
     if (!room || room._id !== roomId) {
       dispatch(listRoomDetails(roomId)); // Fetch room details if not loaded
+      console.log(room.lister)
     } else {
       setFormData({
         name: room.name || '',
@@ -75,10 +80,8 @@ const UpdateRoomScreen = () => {
     navigate(`/rooms/${roomId}`);
   };
 
-  // ✅ Check if the logged-in user is the owner of the room
-  const isUser = room?.user ? userInfo?.id === room.user._id : false;
 
-  if (!isUser) {
+  if (!userInfo || !room?.lister || userInfo.username !== room.lister.username) {
     return (
       <Container className="mt-5">
         <Alert variant="danger">You are not authorized to edit this room.</Alert>
