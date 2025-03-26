@@ -67,7 +67,6 @@ const BookingHistory = () => {
                             <th>Check-in</th>
                             <th>Check-out</th>
                             <th>Booking Time</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -82,11 +81,6 @@ const BookingHistory = () => {
                                 <td>{booking.check_in}</td>
                                 <td>{booking.check_out}</td>
                                 <td>{formatDateTime(booking.created_at)}</td>
-                                <td>
-                                    <span className={`badge ${booking.status === "Confirmed" ? "bg-success" : "bg-warning"}`}>
-                                        {booking.status || "Pending"}
-                                    </span>
-                                </td>
                             </tr>
                         ))}
                     </tbody>

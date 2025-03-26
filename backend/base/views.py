@@ -196,12 +196,6 @@ def user_bookings(request, email):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def pending_bookings(request):
-    pending = Booking.objects.filter(payment_status="Pending")
-    serializer = BookingSerializer(pending, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
 def booking_history(request):
     email = request.query_params.get("email")
     if not email:
@@ -210,3 +204,4 @@ def booking_history(request):
     bookings = Booking.objects.filter(email=email)
     serializer = BookingSerializer(bookings, many=True)
     return Response(serializer.data)
+
