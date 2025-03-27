@@ -4,10 +4,15 @@ import axios from "axios";
 import { Form, Button, Alert, Row, Col } from "react-bootstrap";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { listRoomDetails } from "../actions/roomActions";
+import "../screenscss/BookingScreen.css"; // Import updated CSS
+import { createBooking } from "../actions/bookingActions";
 
 const BookingScreen = () => {
     const { id } = useParams(); // Room ID
+    const dispatch = useDispatch();
+
     const navigate = useNavigate();
     
     const userLogin = useSelector((state) => state.userLogin);
@@ -21,6 +26,29 @@ const BookingScreen = () => {
     const [confirmation, setConfirmation] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    
+
+    const booking = useSelector((state) => state.booking);
+    const { bookingDates } = booking;
+
+    const roomDetails = useSelector((state) => state.roomDetails);
+    const { room } = roomDetails;
+
+    const pricePerDay = room?.price || 0; // Default to 0 kung wala pang data
+    const checkInDate = checkIn ? new Date(checkIn) : null;
+    const checkOutDate = checkOut ? new Date(checkOut) : null;
+
+    // I-compute ang total days ng stay
+    const totalDays = checkInDate && checkOutDate
+        ? Math.max(0, (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
+        : 0;
+
+    // Compute total price
+    const totalPrice = totalDays * pricePerDay;
+
+    useEffect(() => {
+        dispatch(listRoomDetails(id));
+    }, [dispatch, id]);
 
     useEffect(() => {
         // Auto-fill user details when userInfo is available
@@ -29,6 +57,21 @@ const BookingScreen = () => {
             setEmail(userInfo.email || "");
         }
     }, [userInfo]);
+
+    useEffect(() => {
+        if (bookingDates?.startDate && bookingDates?.endDate) {
+            setCheckIn(bookingDates.startDate);
+            setCheckOut(bookingDates.endDate);
+        }
+    }, [bookingDates]);
+
+    useEffect(() => {
+        const savedDates = JSON.parse(localStorage.getItem("bookingDates"));
+        if (savedDates) {
+            setCheckIn(savedDates.startDate);
+            setCheckOut(savedDates.endDate);
+        }
+    }, []);
 
     const handleDateClick = (date) => {
         if (!checkIn || (checkIn && checkOut)) {
@@ -51,48 +94,53 @@ const BookingScreen = () => {
         setCheckOut("");
     };
 
-    const handlePayment = async () => {
-        try {
-            const { data } = await axios.post("/api/payment/");
-            setConfirmation(data.message);
-        } catch (err) {
-            setError("Payment failed. Try again.");
-        }
-    };
-
     const handleBooking = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         setConfirmation(null);
     
+        const formatDate = (date) => {
+            const d = new Date(date);
+            return d.toISOString().split("T")[0]; // Convert to YYYY-MM-DD
+        };
+        
+        const bookingData = {
+            name,
+            email,
+            check_in: formatDate(checkIn),
+            check_out: formatDate(checkOut),
+            guests,
+            room: parseInt(id),
+            payment_status: "Pending",
+        };
+        
         try {
-            const { data, status } = await axios.post("/api/bookings/", {
-                room: id,
-                name,
-                email,
-                check_in: checkIn,
-                check_out: checkOut,
-                guests: Number(guests),
-                payment_status: "Completed",  // Simulating a completed payment
-            });
+            const booking = await dispatch(createBooking(bookingData)); // Dispatch Redux action
     
-            if (status === 201) {
-                setConfirmation("Booking successfully submitted! 🎉");
-                setCheckIn("");
-                setCheckOut("");
-                setGuests(1);
-                setTimeout(() => navigate("/"), 2000);
-            } else {
-                setError("Booking failed. Please try again.");
+            if (booking) {
+                navigate(`/booking-summary/${booking._id}/pay`, {
+                    state: {
+                        bookingId: booking._id,
+                        name,
+                        checkIn,
+                        checkOut,
+                        guests,
+                        totalPrice,
+                        roomName: room?.name || "Unknown Room",
+                    },
+                });
+    
+                setConfirmation("Booking successfully created! 🎉");
             }
-        } catch (err) {
-            setError(err.response?.data?.message || "Booking failed. Please try again.");
+        } catch (error) {
+            setError("Failed to create booking");
         } finally {
             setLoading(false);
         }
-    };     
+    };
 
+    
     return (
         <div className="container mt-4">
             <h2>Book Your Stay</h2>
@@ -155,6 +203,7 @@ const BookingScreen = () => {
                     </Col>
                 </Row>
 
+
                 <Form.Group className="mb-3 mt-4">
                     <Form.Label>Number of Guests</Form.Label>
                     <Form.Control
@@ -164,11 +213,12 @@ const BookingScreen = () => {
                         onChange={(e) => setGuests(e.target.value)}
                         required
                     />
-                </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label><strong>Total Price:</strong></Form.Label>
+                        <Form.Control type="text" value={`₱${totalPrice.toLocaleString()}`} readOnly />
+                    </Form.Group>
 
-                <Button onClick={() => handlePayment()} variant="success">
-                    Pay Now
-                </Button>
+                </Form.Group>
 
                 <Button type="submit" variant="primary" className="submit-button" disabled={loading}>
                     {loading ? "Submitting..." : "Confirm Booking"}

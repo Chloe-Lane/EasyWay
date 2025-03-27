@@ -1,4 +1,5 @@
 import { Spinner } from "react-bootstrap";
+import React from "react";
 
 function Loader(){
     return(
@@ -14,7 +15,7 @@ function Loader(){
     >
         <span className='sr-only'>Loading...</span>
     </Spinner>
-    )
+    );
 }
 
 export default Loader

@@ -1,0 +1,69 @@
+/* Container */
+.booking-summary-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f4f4f4;
+}
+
+/* Summary Card */
+.summary-card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.08);
+    background: white;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* Room Image */
+.room-image {
+    width: 100%;
+    height: 250px;
+    background: url('https://source.unsplash.com/400x250/?modern,hotel,room') center/cover no-repeat;
+}
+
+/* Booking Details */
+.summary-details {
+    padding: 20px;
+}
+
+.summary-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 15px;
+}
+
+/* Text Details */
+.details p {
+    font-size: 16px;
+    color: #444;
+    margin: 5px 0;
+}
+
+/* Total Price */
+.total-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #111;
+    margin-top: 15px;
+}
+
+/* Pay Now Button */
+.pay-now-btn {
+    background: black;
+    border: none;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 6px;
+    width: 100%;
+    transition: 0.3s ease-in-out;
+}
+
+.pay-now-btn:hover {
+    background: #333;
+}

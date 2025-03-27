@@ -12,6 +12,8 @@ import '../index.css';
 import Map from "../components/Map";
 import { setMapLocation } from '../actions/mapActions';
 import { getUserProfile } from '../actions/userActions';
+import { saveBookingDates } from "../actions/bookingActions"; // Create an action for this
+
 
 function RoomScreen() {
     const { id } = useParams();
@@ -19,12 +21,20 @@ function RoomScreen() {
     const roomDetails = useSelector((state) => state.roomDetails);
     const { room = {}, loading, error } = roomDetails;
 
-
+ 
+    const handleSaveDates = () => {
+        if (startDate && endDate) {
+            const savedDates = { startDate, endDate };
+            localStorage.setItem("bookingDates", JSON.stringify(savedDates)); // Or use Redux
+            dispatch(saveBookingDates(savedDates)); // If using Redux
+        }
+    };
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [savedDate, setSavedDate] = useState(null);
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
+
     const handleDateSelection = (clickedDate) => {
         if (!startDate || (startDate && endDate)) {
             setStartDate(clickedDate);
@@ -41,7 +51,7 @@ function RoomScreen() {
         if (!room || room._id !== id) {
             dispatch(listRoomDetails(id));
         }
-    }, [dispatch, id]); 
+    }, [dispatch, id], room); 
 
     // ✅ Prevent unnecessary re-fetching of user profile
     useEffect(() => {
@@ -133,7 +143,7 @@ function RoomScreen() {
                         </Col>
                     </Row>
                     
-                    <Row className="mt-4 justify-content-center">
+                    <Row className="mt-2 justify-content-center">
                         <Col md={6} className="d-flex justify-content-center">
                             <Card className="p-3 shadow-lg" style={{ maxWidth: '350px' }}>
                                 <Calendar
@@ -180,14 +190,26 @@ function RoomScreen() {
                                         </span>
                                     </div>
                                     <div className="d-grid gap-2">
-                                        <Button variant="dark" onClick={() => setSavedDate({ startDate, endDate })} className="rounded-pill">Save Dates</Button>
+                                    <Button variant="dark" onClick={handleSaveDates} className="rounded-pill">Save Dates</Button>
                                         <Button variant="outline-secondary" onClick={() => {
                                             setStartDate(null);
                                             setEndDate(null);
                                             setSavedDate(null);
                                         }} className="rounded-pill">Clear</Button>
                                     </div>
-                                    {userInfo && room?.lister && userInfo.username === room.lister.username && (
+
+                                {userInfo && (
+                                    <Row className="justify-content-center mt-4">
+                                        <ListGroup.Item>
+                                            <Link to={`/book/${room._id}`}>
+                                                <Button className="btn btn-primary w-100">Book Now</Button>
+                                            </Link>
+                                        </ListGroup.Item>
+                                    </Row>
+                                )}
+                                </Card.Body>
+                                
+                            {userInfo && room?.lister && userInfo.username === room.lister.username && (
                                 <Link to={`/update/room/${room._id}`} className="btn btn-primary">
                                     Edit Listing
                                 </Link>
@@ -198,7 +220,6 @@ function RoomScreen() {
                                     💬 Message Host
                                 </Link>
                                 )}
-                                </Card.Body>
                             </Card>
                         </Col>
                     </Row>

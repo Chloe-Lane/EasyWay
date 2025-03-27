@@ -119,14 +119,16 @@ class Booking(models.Model):
     ]
 
     _id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     email = models.EmailField()
     check_in = models.DateField()
     check_out = models.DateField()
     guests = models.PositiveIntegerField()
+    total_price = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     payment_status = models.CharField(
-        max_length=10, choices=PAYMENT_STATUS_CHOICES, default="Completed"
+        max_length=10, choices=PAYMENT_STATUS_CHOICES, default="Pending"
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

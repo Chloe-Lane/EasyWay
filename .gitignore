@@ -6,7 +6,6 @@ env/
 venv/
 *.log
 
-# Django specific ignores
 /media/
 /staticfiles/
 

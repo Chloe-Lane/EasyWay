@@ -17,7 +17,7 @@ const UpdateRoomScreen = () => {
 
   useEffect(() => {
     console.log(userInfo)
-  },[])
+  },[userInfo])
 
   // ✅ State for form fields
   const [formData, setFormData] = useState({
@@ -50,7 +50,7 @@ const UpdateRoomScreen = () => {
         longitude: room.longitude || '',
       });
     }
-  }, [dispatch, roomId, room?._id]);
+  }, [dispatch, roomId, room?._id, room]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;

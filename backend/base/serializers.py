@@ -4,6 +4,11 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Message  # Ensure you import the Message model
+from base.models import CustomUser
+from .serializers import *
+from .serializers import *
+
+
 
 
 class AmenitySerializer(serializers.ModelSerializer):
@@ -80,16 +85,34 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = '__all__'  # Includes amenities
-    
-    # Booking Serializer
-class BookingSerializer(serializers.ModelSerializer):
-    room_name = serializers.CharField(source="room.name", read_only=True)
 
+# ✅ BookingSerializer should be separate!
+class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = '__all__'
+        fields = "__all__"
+        extra_kwargs = {"user": {"read_only": True}}  # Ensures user is set automatically
+
+    def create(self, validated_data):
+        validated_data["user"] = self.context["request"].user
+        return super().create(validated_data)
+
+    def validate(self, data):
+        if data["check_in"] >= data["check_out"]:
+            raise serializers.ValidationError("Check-in date must be before check-out date.")
+        return data
 
 class ChatRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatRoom
         fields = '__all__'
+
+
+# class OrderSerializer(serializers.ModelSerializer):
+#     orderItems = serializers.SerializerMethodField(read_only=True)
+#     shippingAddress = serializers.SerializerMethodField(read_only=True)
+#     user = serializers.SerializerMethodField(read_only=True)
+
+#     class Meta:
+#         model = Order
+#         fields = '__all__'

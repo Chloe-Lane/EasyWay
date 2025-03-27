@@ -16,6 +16,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.models import User
 from rest_framework import status, viewsets
+from django.contrib.auth.hashers import make_password
+import traceback
+
 
 
 
@@ -289,17 +292,24 @@ def user_chat_rooms(request):
 @api_view(['POST'])
 def create_booking(request):
     data = request.data
-    if "payment_status" not in data or data["payment_status"] != "Completed":
-        return Response({"message": "Payment required before booking."}, status=400)
+    print("Received booking data:", data)  # 🔍 Debugging output
     
+    if "payment_status" not in data or data["payment_status"] != "Completed":
+        print("❌ Payment not completed!")  # 🔍 Debugging
+        return Response({"message": "Payment required before booking."}, status=400)
+
     serializer = BookingSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
+        print("✅ Booking created successfully!")  # 🔍 Debugging
         return Response(serializer.data, status=201)
+    
+    print("❌ Serializer Errors:", serializer.errors)  # 🔍 Debugging
     return Response(serializer.errors, status=400)
 
+
 class BookingViewSet(viewsets.ModelViewSet):
-    serializer_class = BookingSerializer
+    serializer_class = PolicySerializer
     
     def get_queryset(self):
         email = self.request.query_params.get("email")
@@ -326,3 +336,106 @@ def booking_history(request):
     bookings = Booking.objects.filter(email=email)
     serializer = BookingSerializer(bookings, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def getUserProfile(request):
+    user = request.user
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def updateUserProfile(request):
+    user = request.user
+    serializer = UserSerializerWithToken(user, many=False)
+    data = request.data
+    print(data)
+    user.first_name = data['name']
+    user.email = data['email']
+    
+
+    if data['password'] != '':
+        user.password = make_password(data['password'])
+    user.save()
+    return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_booking(request):
+    try:
+        data = request.data
+        print("Received Data:", json.dumps(data, indent=2))  # Debugging
+
+        # Ensure payment status is present
+        if "payment_status" not in data:
+            return Response({"message": "Payment status is required."}, status=400)
+
+        # Assign the authenticated user to the booking
+        data["user"] = request.user.id  # Add the user's ID to the request data
+
+        # Pass the request context to the serializer
+        serializer = BookingSerializer(data=data, context={"request": request})
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        else:
+            return Response(serializer.errors, status=400)
+
+    except Exception as e:
+        print("Error:", str(e))
+        traceback.print_exc()  # Print full traceback for debugging
+        return Response({"error": str(e)}, status=500)
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def PayBooking(request, booking_id):
+    try:
+        # Change 'id' to '_id' in the query
+        booking = Booking.objects.get(_id=booking_id)
+        
+        booking.payment_status = "Completed"
+        booking.save()
+        
+        return Response({"message": "Payment successful!"}, status=200)
+    except Booking.DoesNotExist:
+        return Response({"error": "Booking not found"}, status=404)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getBookings(request):
+    try:
+        user = request.user
+        bookings = Booking.objects.filter(user=user)
+        serializer = BookingSerializer(bookings, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getBooking(request, booking_id):
+    try:
+        print(f"Received request for booking {booking_id}")
+        booking = Booking.objects.get(_id=booking_id)
+        serializer = BookingSerializer(booking)
+        return Response(serializer.data)
+    except Booking.DoesNotExist:
+        return Response({"error": "Booking not found"}, status=404)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+
+@api_view(['POST'])
+def update_payment_status(request):
+    data = request.data
+    try:
+        booking = Booking.objects.get(email=data['email'], check_in=data['check_in'], check_out=data['check_out'])
+        booking.payment_status = data['payment_status']
+        booking.save()
+        return Response({"message": "Payment status updated successfully"}, status=200)
+    except Booking.DoesNotExist:
+        return Response({"error": "Booking not found"}, status=404)

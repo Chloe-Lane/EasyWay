@@ -6,7 +6,6 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { login } from "../actions/userActions";
 import FormContainer from "../components/FormContainer";
-import { setUser } from '../actions/userActions'; // Adjust path as needed
 
 function LoginScreen() {
   const [username, setUsername] = useState('');

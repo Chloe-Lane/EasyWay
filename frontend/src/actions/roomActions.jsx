@@ -48,7 +48,7 @@ export const listRoomDetails = (id) => async (dispatch) => {
   try {
       dispatch({ type: ROOM_DETAILS_REQUEST });
 
-      const { data } = await axios.get(`/rooms/${id}`);  // ✅ Make sure endpoint is correct
+      const { data } = await axios.get(`/room/${id}`);  // ✅ Make sure endpoint is correct
 
       dispatch({
           type: ROOM_DETAILS_SUCCESS,
@@ -95,7 +95,7 @@ try {
     },
   };
 
-  const { data } = await axios.post('/rooms/create/', roomData, config);
+  const { data } = await axios.post('/room/create/', roomData, config);
 
   dispatch({
     type: ROOM_CREATE_SUCCESS,
@@ -179,7 +179,7 @@ export const updateRoom = (roomId, roomData) => async (dispatch, getState) => {
           roomData.images.forEach((image) => formData.append('images', image));
       }
 
-      const { data } = await axios.put(`/rooms/${roomId}/update/`, formData, config);
+      const { data } = await axios.put(`/room/${roomId}/update/`, formData, config);
 
       dispatch({ type: ROOM_UPDATE_SUCCESS, payload: data });
 

@@ -38,7 +38,7 @@ function Header() {
 
             {userInfo ? (
               <NavDropdown title={userInfo.name} id="username">
-                <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/users/profile">Profile</NavDropdown.Item>
                 <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
               </NavDropdown>
             ) : (

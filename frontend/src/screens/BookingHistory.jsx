@@ -14,7 +14,7 @@ const BookingHistory = () => {
         const fetchBookings = async () => {
             try {
                 const { data } = await axios.get(
-                    `http://127.0.0.1:8000/api/bookings/?email=${userInfo.email}`
+                    `http://127.0.0.1:8000/bookings/?email=${userInfo.email}`
                 );
                 setBookings(data);
             } catch (err) {
