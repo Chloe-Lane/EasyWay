@@ -1,7 +1,6 @@
 # Ignore Python-related files
 __pycache__/
 *.py[cod]
-*.sqlite3
 env/
 venv/
 *.log

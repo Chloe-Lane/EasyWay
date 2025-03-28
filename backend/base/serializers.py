@@ -8,9 +8,6 @@ from base.models import CustomUser
 from .serializers import *
 from .serializers import *
 
-
-
-
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
