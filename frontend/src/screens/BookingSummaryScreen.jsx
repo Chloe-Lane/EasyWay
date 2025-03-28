@@ -35,7 +35,7 @@ const BookingSummaryScreen = () => {
     const handleApprove = (orderID) => {
         console.log("Payment successful! Order ID:", orderID);
         setPaid(true);
-        navigate("/confirmation", { state: { orderID, totalPrice } });
+        navigate("/booking/:id", { state: { orderID, totalPrice } });
     };
 
     const createOrderHandler = (data, actions) => {

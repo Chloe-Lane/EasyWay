@@ -113,6 +113,7 @@ const BookingScreen = () => {
             guests,
             room: parseInt(id),
             payment_status: "Pending",
+            total_price: totalPrice,
         };
         
         try {

@@ -47,6 +47,7 @@ function ProfileScreen() {
 
   useEffect(() => {
     console.log("Bookings updated:", bookings);
+    console.log("profile user:", user);
   }, [bookings]);
 
   const submitHandler = (e) => {

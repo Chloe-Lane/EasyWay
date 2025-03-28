@@ -16,13 +16,16 @@ const BookingSummaryNoPayment = () => {
     const { loading, error, booking } = useSelector((state) => state.bookingDetails);
 
     useEffect(() => {
-        console.log("User Info:", userInfo);
-    }, [userInfo]);    
-
-    useEffect(() => {{
-            dispatch(getBookingDetails(bookingId));
+        if (!userInfo) {
+            navigate("/login");  // Redirect to login if user is not logged in
+        } else {
+            dispatch(getBookingDetails(bookingId)); // Dispatch action to get booking details
         }
     }, [dispatch, bookingId, userInfo, navigate]);
+
+    useEffect(() => {
+        console.log("booking: ", booking); // Log booking data after it gets updated
+    }, [booking]);
 
     return (
         <Container className="booking-summary-container">
@@ -35,18 +38,22 @@ const BookingSummaryNoPayment = () => {
                     ) : error ? (
                         <Message variant="danger">{error}</Message>
                     ) : (
-                        <>
-                            <div className="details">
-                                <p><strong>Room:</strong> {booking.roomName}</p>
-                                <p><strong>Name:</strong> {booking.name}</p>
-                                <p><strong>Check-in:</strong> {booking.checkIn}</p>
-                                <p><strong>Check-out:</strong> {booking.checkOut}</p>
-                                <p><strong>Guests:</strong> {booking.guests}</p>
-                            </div>
-                            <div className="total-price">
-                                <h4>₱{Number(booking.totalPrice).toLocaleString()}</h4>
-                            </div>
-                        </>
+                        booking ? (  // Check if booking is available
+                            <>
+                                <div className="details">
+                                    <p><strong>Room:</strong> {booking.room}</p>
+                                    <p><strong>Name:</strong> {booking.name}</p>
+                                    <p><strong>Check-in:</strong> {booking.check_in}</p>
+                                    <p><strong>Check-out:</strong> {booking.check_out}</p>
+                                    <p><strong>Guests:</strong> {booking.guests}</p>
+                                </div>
+                                <div className="total-price">
+                                    <h4>₱{Number(booking.total_price)}</h4>
+                                </div>
+                            </>
+                        ) : (
+                            <Message variant="danger">Booking details not found</Message>
+                        )
                     )}
                 </Card.Body>
             </Card>

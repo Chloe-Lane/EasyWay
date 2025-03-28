@@ -53,7 +53,7 @@ export const getMyBookings = () => async (dispatch, getState) => {
           },
       };
 
-      const { data } = await axios.get(`/bookings/mybookings/`, config);
+      const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/bookings/mybookings/`, config);
 
       
       console.log("Fetched bookings:", data); // Debugging line
