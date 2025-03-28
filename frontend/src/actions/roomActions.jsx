@@ -116,7 +116,7 @@ export const listAmenities = () => async (dispatch) => {
   try {
     dispatch({ type: AMENITY_LIST_REQUEST });
 
-    const { data } = await axios.get('/rooms/amenities/');
+    const { data } = await axios.get('https://easyway-backend-e605862abcad.herokuapp.com/rooms/amenities/');
 
     dispatch({
       type: AMENITY_LIST_SUCCESS,
@@ -134,7 +134,7 @@ export const listPolicies = () => async (dispatch) => {
   try {
     dispatch({ type: POLICY_LIST_REQUEST });
 
-    const { data } = await axios.get('/rooms/policies/');
+    const { data } = await axios.get('https://easyway-backend-e605862abcad.herokuapp.com/rooms/policies/');
 
     dispatch({
       type: POLICY_LIST_SUCCESS,
@@ -179,7 +179,7 @@ export const updateRoom = (roomId, roomData) => async (dispatch, getState) => {
           roomData.images.forEach((image) => formData.append('images', image));
       }
 
-      const { data } = await axios.put(`/room/${roomId}/update/`, formData, config);
+      const { data } = await axios.put(`https://easyway-backend-e605862abcad.herokuapp.com/room/${roomId}/update/`, formData, config);
 
       dispatch({ type: ROOM_UPDATE_SUCCESS, payload: data });
 

@@ -10,7 +10,7 @@ const BookingRequestsScreen = () => {
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                const { data } = await axios.get("/bookings/pending/");
+                const { data } = await axios.get("https://easyway-backend-e605862abcad.herokuapp.com/bookings/pending/");
                 setRequests(data);
             } catch (err) {
                 setError("Failed to load booking requests.");

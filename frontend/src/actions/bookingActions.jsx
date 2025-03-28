@@ -87,7 +87,7 @@ export const getBookingDetails = (bookingId) => async (dispatch, getState) => {
       }
       
       console.log("Booking ID:", bookingId);
-      const { data } = await axios.get(`/booking/${bookingId}/`, config);
+      const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/booking/${bookingId}/`, config);
       console.log("Booking details:", data);
           
 
@@ -132,7 +132,7 @@ export const PayBooking = (bookingId) => async (dispatch, getState) => {
       type: BOOKING_PAY_REQUEST
     })
 
-  const { data } = await axios.put(`/bookings/${bookingId}/pay`, {}, config);
+  const { data } = await axios.put(`https://easyway-backend-e605862abcad.herokuapp.com/bookings/${bookingId}/pay`, {}, config);
 
   dispatch({
     type: BOOKING_PAY_SUCCESS,
@@ -164,7 +164,7 @@ export const createBooking = (bookingData) => async (dispatch, getState) => {
           },
       };
 
-      const { data } = await axios.post("/booking/create/", bookingData, config);
+      const { data } = await axios.post("https://easyway-backend-e605862abcad.herokuapp.com/booking/create/", bookingData, config);
 
       dispatch({
           type: BOOKING_CREATE_SUCCESS,

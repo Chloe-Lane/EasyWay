@@ -70,7 +70,7 @@ export const getUserProfile = () => async (dispatch, getState) => {
   
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
   
-      const { data } = await axios.get('/users/profile/', config);
+      const { data } = await axios.get('https://easyway-backend-e605862abcad.herokuapp.com/users/profile/', config);
   
       dispatch({
         type: USER_PROFILE_SUCCESS,
@@ -93,7 +93,7 @@ export const register = (username, email, password, role) => async (dispatch) =>
       dispatch({ type: USER_REGISTER_REQUEST });
   
       const config = { headers: { 'Content-Type': 'application/json' } };
-      const { data } = await axios.post('/users/register', { username, email, password, role }, config);
+      const { data } = await axios.post('https://easyway-backend-e605862abcad.herokuapp.com/users/register', { username, email, password, role }, config);
   
       dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
   
@@ -125,7 +125,7 @@ export const searchRooms = (query = '', amenities = []) => async (dispatch) => {
         if (query) params.append('q', query);
         amenities.forEach((amenity) => params.append('amenities[]', amenity)); // Include amenities
 
-        const { data } = await axios.get(`/rooms/search/?${params.toString()}`);
+        const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/rooms/search/?${params.toString()}`);
 
         dispatch({ type: SEARCH_ROOMS_SUCCESS, payload: data });
 
@@ -157,7 +157,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.get(`/users/${id}/`, config);
+    const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/users/${id}/`, config);
     dispatch({
       type: USER_DETAILS_SUCCESS,
       payload: data,
@@ -189,7 +189,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.put(`/users/profile/update/`, user, config);
+    const { data } = await axios.put(`https://easyway-backend-e605862abcad.herokuapp.com/users/profile/update/`, user, config);
     dispatch({
       type: USER_UPDATE_PROFILE_SUCCESS,
       payload: data,

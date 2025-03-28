@@ -46,7 +46,7 @@ const BookingSummaryScreen = () => {
                     </div>
 
                     {/* PayPal Integration */}
-                    <PayPalScriptProvider options={{ "client-id": "YOUR_PAYPAL_CLIENT_ID" }}>
+                    <PayPalScriptProvider options={{ "client-id": "AZJ4pJl9A8lBjJaGOux1iyN3kq_YlXrqomyeFDI8cf3XKZkpMldp30crcLnPp7NQFgpIRaLs8EvEh3Oi" }}>
                         <PayPalButtons
                             createOrder={(data, actions) => {
                                 return actions.order.create({

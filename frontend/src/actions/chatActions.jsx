@@ -18,7 +18,7 @@ export const fetchUserChatRooms = () => async (dispatch, getState) => {
     const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
     // ✅ This hits user_chat_rooms view
-    const { data } = await axios.get(`/chats/`, config);
+    const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/chats/`, config);
 
     dispatch({ type: USER_CHAT_LIST_SUCCESS, payload: data });
   } catch (error) {
@@ -45,7 +45,7 @@ export const fetchChatMessages = (roomId) => async (dispatch, getState) => {
     const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
     // ✅ This hits get_chat_messages view
-    const { data } = await axios.get(`/chat/${roomId}/`, config);
+    const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/chat/${roomId}/`, config);
 
     dispatch({ type: CHAT_HISTORY_SUCCESS, payload: data });
   } catch (error) {
