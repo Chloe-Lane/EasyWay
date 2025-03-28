@@ -20,14 +20,8 @@ const BookingSummaryScreen = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!userInfo) {
-            navigate("/login");
-        } else if (!bookingId) {
-            navigate("/");
-        } else if (bookingId && !booking) {
-            dispatch(getBookingDetails(bookingId));
-        }
-    }, [dispatch, navigate, userInfo, bookingId, booking]);
+        dispatch(getBookingDetails(bookingId));
+    }, [dispatch, bookingId]);
 
     const { name, check_in, check_out, guests, total_price, room } = booking || {};
 
