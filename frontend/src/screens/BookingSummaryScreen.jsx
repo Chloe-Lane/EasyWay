@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { useDispatch, useSelector } from "react-redux";
+import { getBookingDetails } from "../actions/bookingActions";
+import { useParams } from "react-router-dom";
 import "../screenscss/BookingSummary.css"; // Import minimalist styles
 
 const BookingSummaryScreen = () => {
