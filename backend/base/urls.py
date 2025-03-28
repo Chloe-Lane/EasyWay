@@ -36,7 +36,7 @@ urlpatterns = [
     # Payments
     path('payment/', views.process_payment, name="process-payment"),
 
-    path('/booking/update-payment/', views.update_payment_status, name="update-payment"),
+    path('booking/update-payment/', views.update_payment_status, name="update-payment"),
 
 ]
 

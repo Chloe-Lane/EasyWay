@@ -15,6 +15,7 @@ function HomeScreen() {
 
   useEffect(() => {
     dispatch(listRooms());
+    console.log('Rooms:', rooms);
   }, [dispatch]);
 
   return (
