@@ -36,7 +36,7 @@ export const login = (username, password) => async (dispatch) => {
         };
 
         const { data } = await axios.post(
-            '/users/login/',
+            'https://easyway-backend-e605862abcad.herokuapp.com/users/login/',
             { username, password },
             config
         );
@@ -157,7 +157,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/users/${id}/`, config);
+    const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/users/profile/`, config);
     dispatch({
       type: USER_DETAILS_SUCCESS,
       payload: data,

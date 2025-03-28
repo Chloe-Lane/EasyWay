@@ -27,7 +27,7 @@ export const listRooms = () => async (dispatch) => {
 
   try {
       dispatch({ type: ROOM_LIST_REQUEST })
-      const {data} = await axios.get('/rooms')
+      const {data} = await axios.get('https://easyway-backend-e605862abcad.herokuapp.com/rooms')
       dispatch({
           type: ROOM_LIST_SUCCESS,
           payload: data
@@ -48,7 +48,7 @@ export const listRoomDetails = (id) => async (dispatch) => {
   try {
       dispatch({ type: ROOM_DETAILS_REQUEST });
 
-      const { data } = await axios.get(`/room/${id}`);  // ✅ Make sure endpoint is correct
+      const { data } = await axios.get(`https://easyway-backend-e605862abcad.herokuapp.com/room/${id}`);  // ✅ Make sure endpoint is correct
 
       dispatch({
           type: ROOM_DETAILS_SUCCESS,
