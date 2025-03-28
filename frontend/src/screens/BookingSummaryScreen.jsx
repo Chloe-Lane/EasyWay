@@ -10,15 +10,32 @@ const BookingSummaryScreen = () => {
     const [paid, setPaid] = useState(false);
     const [sdkReady, setSdkReady] = useState(false); // PayPal script loading state
 
-    const { name, checkIn, checkOut, guests, totalPrice, roomName } = location.state || {};
+    const { bookingId } = useParams();
+    const { userInfo } = useSelector((state) => state.userLogin);
+    const { loading, error, booking } = useSelector((state) => state.bookingDetails);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!checkIn || !checkOut) {
+        if (!userInfo) {
+            navigate("/login");
+        } else if (!bookingId) {
+            navigate("/");
+        } else if (bookingId && !booking) {
+            dispatch(getBookingDetails(bookingId));
+        }
+    }, [dispatch, navigate, userInfo, bookingId, booking]);
+
+    const { name, check_in, check_out, guests, total_price, room } = booking || {};
+
+
+    useEffect(() => {
+        if (!check_in || !check_out) {
             navigate("/");
         } else {
             addPayPalScript(); // Adding PayPal script if checkout details are available
         }
-    }, [checkIn, checkOut, navigate]);
+    }, [check_in, check_out, navigate]);
 
     const addPayPalScript = () => {
         const script = document.createElement("script");
@@ -35,7 +52,7 @@ const BookingSummaryScreen = () => {
     const handleApprove = (orderID) => {
         console.log("Payment successful! Order ID:", orderID);
         setPaid(true);
-        navigate("/booking/:id", { state: { orderID, totalPrice } });
+        navigate("/booking/:id", { state: { orderID, total_price } });
     };
 
     const createOrderHandler = (data, actions) => {
@@ -43,7 +60,7 @@ const BookingSummaryScreen = () => {
             purchase_units: [
                 {
                     amount: {
-                        value: totalPrice.toFixed(2), // Set the total price for the booking
+                        value: total_price.toFixed(2), // Set the total price for the booking
                     },
                 },
             ],
@@ -65,16 +82,16 @@ const BookingSummaryScreen = () => {
                 <Card.Body className="summary-details">
                     <h2 className="summary-title">Booking Summary</h2>
                     <div className="details">
-                        <p><strong>Room:</strong> {roomName}</p>
+                        <p><strong>Room:</strong> {room}</p>
                         <p><strong>Name:</strong> {name}</p>
-                        <p><strong>Check-in:</strong> {checkIn}</p>
-                        <p><strong>Check-out:</strong> {checkOut}</p>
+                        <p><strong>Check-in:</strong> {check_in}</p>
+                        <p><strong>Check-out:</strong> {check_out}</p>
                         <p><strong>Guests:</strong> {guests}</p>
                     </div>
 
                     {/* Total Price */}
                     <div className="total-price">
-                        <h4>₱{totalPrice.toLocaleString()}</h4>
+                        <h4>₱{total_price}</h4>
                     </div>
 
                     {/* PayPal Integration */}
@@ -98,3 +115,4 @@ const BookingSummaryScreen = () => {
 };
 
 export default BookingSummaryScreen;
+
