@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'channels',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -225,3 +226,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+from backend.aws.conf import *
